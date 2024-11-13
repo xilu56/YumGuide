@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Alert, StyleSheet, TouchableWithoutFeedback } from 'react-native';
+import React, { useState, useContext } from 'react';
+import { View, Text, TextInput, Alert, StyleSheet } from 'react-native';
 import Button from '../Components/Button';
+import { IngredientContext } from '../Context/IngredientContext'; // Import IngredientContext
 
 export default function AddMyIngredient({ navigation }) {
+  const { addIngredient } = useContext(IngredientContext); // Get addIngredient from context
   const [name, setName] = useState('');
   const [quantity, setQuantity] = useState('');
   const [unit, setUnit] = useState('');
@@ -18,11 +20,15 @@ export default function AddMyIngredient({ navigation }) {
       return;
     }
 
-    // Logic for saving the data locally or to some state can be added here
+    // Create a new ingredient object
+    const newIngredient = { name, quantity, unit };
+
+    // Add the ingredient to Firestore using context
+    addIngredient(newIngredient);
+
     Alert.alert('Success', 'Ingredient saved successfully!');
     navigation.goBack();
   };
-
 
   return (
     <View style={styles.container}>
@@ -75,9 +81,6 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: '#fff',
     marginBottom: 15,
-  },
-  datePicker: {
-    backgroundColor: '#fff',
   },
   buttonContainer: {
     flexDirection: 'row',

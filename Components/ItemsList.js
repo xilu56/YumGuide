@@ -1,9 +1,8 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { View, FlatList, StyleSheet, Pressable } from 'react-native';
 import Item from './Item';
 
 export default function ItemsList({ items, onItemPress }) {
-
   const formattedItems = items.map(item => ({
     ...item,
     date: item.date instanceof Date
@@ -20,7 +19,7 @@ export default function ItemsList({ items, onItemPress }) {
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <Pressable onPress={() => onItemPress(item)}>
-            <Item item={item} theme={theme} />
+            <Item item={item} />
           </Pressable>
         )}
       />

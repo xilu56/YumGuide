@@ -1,20 +1,14 @@
-import React, { useState, useLayoutEffect, useEffect } from 'react';
-import { View, StyleSheet, Pressable, FlatList, Text } from 'react-native';
+import React, { useContext, useLayoutEffect } from 'react';
+import { View, StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import ItemsList from '../Components/ItemsList';
+import { IngredientContext } from '../Context/IngredientContext'; // Import IngredientContext
 import getColors from '../Helper/colors';
 
 const colors = getColors();
 
-export default function IngredientsScreen({ navigation, route }) {
-  const [ingredients, setIngredients] = useState([]);
-
-  // Listen for focus event to refresh the ingredients list
-  useEffect(() => {
-    if (route.params?.newIngredient) {
-      setIngredients(prevIngredients => [...prevIngredients, route.params.newIngredient]);
-    }
-  }, [route.params?.newIngredient]);
+export default function IngredientsScreen({ navigation }) {
+  const { ingredients } = useContext(IngredientContext); // Get ingredients from context
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -35,14 +29,6 @@ export default function IngredientsScreen({ navigation, route }) {
     navigation.navigate('AddMyIngredient', { ingredient });
   };
 
-  const renderItem = ({ item }) => (
-    <Pressable onPress={() => handleItemPress(item)} style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }]}>
-      <View style={styles.item}>
-        <Text style={{ color: colors.text }}>{item.name} - {item.quantity} {item.unit}</Text>
-      </View>
-    </Pressable>
-  );
-
   return (
     <View style={styles.screen}>
       <ItemsList items={ingredients} onItemPress={handleItemPress} />
@@ -56,10 +42,5 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: colors.background,
   },
-  item: {
-    padding: 10,
-    marginVertical: 5,
-    backgroundColor: colors.gray,
-    borderRadius: 5,
-  },
 });
+

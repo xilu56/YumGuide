@@ -1,14 +1,18 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import ItemDetails from './ItemDetails';
+import getColors from '../Helper/colors';
 
-export default function Item({ item}) {
+const colors = getColors();
+const { primary, white } = colors;
+
+export default function Item({ item }) {
   return (
     <View style={[styles.itemContainer, { backgroundColor: primary }]}>
       <Text style={[styles.itemName, { color: white }]}>
         {item.name || item.description}
       </Text>
-      <ItemDetails item={item}/>
+      <ItemDetails item={item} />
     </View>
   );
 }
