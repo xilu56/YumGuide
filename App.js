@@ -1,20 +1,39 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-export default function App() {
+// Import your screens
+import RecipesScreen from './screens/RecipesScreen';
+import IngredientsScreen from './screens/IngredientsScreen';
+import DishGalleryScreen from './screens/DishGalleryScreen';
+import StoreLocationScreen from './screens/StoreLocationScreen';
+import ReminderScreen from './screens/ReminderScreen';
+
+const Stack = createStackNavigator();
+const Tab = createBottomTabNavigator();
+
+// Tab Navigator for main screens
+function MainTabs() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <Tab.Navigator>
+      <Tab.Screen name="Recipes" component={RecipesScreen} />
+      <Tab.Screen name="Ingredients" component={IngredientsScreen} />
+      <Tab.Screen name="Dish Gallery" component={DishGalleryScreen} />
+      <Tab.Screen name="Store Location" component={StoreLocationScreen} />
+      <Tab.Screen name="Reminder" component={ReminderScreen} />
+    </Tab.Navigator>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+// Main App component
+export default function App() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Main">
+        <Stack.Screen name="Main" component={MainTabs} options={{ headerShown: false }} />
+        {/* Add more detailed screens if needed */}
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
