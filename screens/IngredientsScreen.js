@@ -23,7 +23,7 @@ export default function IngredientsScreen({ navigation, route }) {
           <Pressable onPress={() => navigation.navigate('AddMyIngredient')} style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }]}>
             <Ionicons name="add" size={24} color={colors.white} style={{ marginRight: 5 }} />
           </Pressable>
-          <Ionicons name="leaf" size={24} color={colors.white} />
+          <Ionicons name="nutrition" size={24} color={colors.white} />
         </View>
       ),
       headerStyle: { backgroundColor: colors.primary },

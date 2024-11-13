@@ -32,7 +32,7 @@ function MainTabs() {
           if (route.name === 'Recipes') {
             iconName = 'fast-food-outline';
           } else if (route.name === 'Ingredients') {
-            iconName = 'leaf-outline';
+            iconName = 'nutrition-outline';
           } else if (route.name === 'Dish Gallery') {
             iconName = 'image-outline';
           } else if (route.name === 'Store Location') {
