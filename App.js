@@ -2,15 +2,16 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { Ionicons } from '@expo/vector-icons';
 
-// Import your screens
 import RecipesScreen from './screens/RecipesScreen';
 import IngredientsScreen from './screens/IngredientsScreen';
 import DishGalleryScreen from './screens/DishGalleryScreen';
 import StoreLocationScreen from './screens/StoreLocationScreen';
 import ReminderScreen from './screens/ReminderScreen';
+import AddMyIngredient from './screens/AddMyIngredient';
 
-import { Ionicons } from '@expo/vector-icons';
+import { IngredientProvider } from './Context/IngredientContext';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -25,15 +26,15 @@ function MainTabs() {
 
           // Set the Ionicons icon names based on the route
           if (route.name === 'Recipes') {
-            iconName = 'fast-food-outline'; // Matches the "burger" icon in the drawing
+            iconName = 'fast-food-outline';
           } else if (route.name === 'Ingredients') {
-            iconName = 'leaf-outline'; // Matches the "mortar and pestle" or a food-related icon
+            iconName = 'leaf-outline';
           } else if (route.name === 'Dish Gallery') {
-            iconName = 'image-outline'; // Matches the "gallery" icon in the drawing
+            iconName = 'image-outline';
           } else if (route.name === 'Store Location') {
-            iconName = 'cart-outline'; // Matches the "shopping cart" icon in the drawing
+            iconName = 'cart-outline';
           } else if (route.name === 'Reminder') {
-            iconName = 'notifications-outline'; // Matches the "bell" icon in the drawing
+            iconName = 'notifications-outline';
           }
 
           return <Ionicons name={iconName} size={size} color={color} />;
@@ -56,11 +57,13 @@ function MainTabs() {
 // Main App component
 export default function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="Main">
-        <Stack.Screen name="Main" component={MainTabs} options={{ headerShown: false }} />
-        {/* Add more detailed screens if needed */}
-      </Stack.Navigator>
-    </NavigationContainer>
+    <IngredientProvider>
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="Main">
+          <Stack.Screen name="Main" component={MainTabs} options={{ headerShown: false }} />
+          <Stack.Screen name="AddMyIngredient" component={AddMyIngredient} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </IngredientProvider>
   );
 }
