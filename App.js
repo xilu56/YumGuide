@@ -10,8 +10,13 @@ import DishGalleryScreen from './screens/DishGalleryScreen';
 import StoreLocationScreen from './screens/StoreLocationScreen';
 import ReminderScreen from './screens/ReminderScreen';
 import AddMyIngredient from './screens/AddMyIngredient';
+import AddMyDish from './screens/AddMyDish';
+import AddMyReminder from './screens/AddMyReminder';
 
 import { IngredientProvider } from './Context/IngredientContext';
+import getColors from './Helper/colors';
+
+const colors = getColors();
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -25,25 +30,33 @@ function MainTabs() {
           let iconName;
 
           // Set the Ionicons icon names based on the route
-          if (route.name === 'Recipes') {
-            iconName = 'fast-food-outline';
-          } else if (route.name === 'Ingredients') {
-            iconName = 'leaf-outline';
-          } else if (route.name === 'Dish Gallery') {
-            iconName = 'image-outline';
-          } else if (route.name === 'Store Location') {
-            iconName = 'cart-outline';
-          } else if (route.name === 'Reminder') {
-            iconName = 'notifications-outline';
+          switch (route.name) {
+            case 'Recipes':
+              iconName = 'fast-food-outline';
+              break;
+            case 'Ingredients':
+              iconName = 'nutrition-outline';
+              break;
+            case 'Dish Gallery':
+              iconName = 'image-outline';
+              break;
+            case 'Store Location':
+              iconName = 'cart-outline';
+              break;
+            case 'Reminder':
+              iconName = 'notifications-outline';
+              break;
+            default:
+              iconName = 'help-circle-outline';
+              break;
           }
 
           return <Ionicons name={iconName} size={size} color={color} />;
         },
+        tabBarActiveTintColor: colors.accent,
+        tabBarInactiveTintColor: colors.gray,
+        tabBarStyle: { backgroundColor: colors.primary },
       })}
-      tabBarOptions={{
-        activeTintColor: 'tomato',
-        inactiveTintColor: 'gray',
-      }}
     >
       <Tab.Screen name="Recipes" component={RecipesScreen} />
       <Tab.Screen name="Ingredients" component={IngredientsScreen} />
@@ -62,6 +75,8 @@ export default function App() {
         <Stack.Navigator initialRouteName="Main">
           <Stack.Screen name="Main" component={MainTabs} options={{ headerShown: false }} />
           <Stack.Screen name="AddMyIngredient" component={AddMyIngredient} />
+          <Stack.Screen name="AddMyDish" component={AddMyDish} />
+          <Stack.Screen name="AddMyReminder" component={AddMyReminder} />
         </Stack.Navigator>
       </NavigationContainer>
     </IngredientProvider>
