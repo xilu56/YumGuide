@@ -10,8 +10,12 @@ import DishGalleryScreen from './screens/DishGalleryScreen';
 import StoreLocationScreen from './screens/StoreLocationScreen';
 import ReminderScreen from './screens/ReminderScreen';
 import AddMyIngredient from './screens/AddMyIngredient';
+import AddMyDish from './screens/AddMyDish';
 
 import { IngredientProvider } from './Context/IngredientContext';
+import getColors from './Helper/colors';
+
+const colors = getColors();
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -39,11 +43,10 @@ function MainTabs() {
 
           return <Ionicons name={iconName} size={size} color={color} />;
         },
+        tabBarActiveTintColor: colors.accent,
+        tabBarInactiveTintColor: colors.gray,
+        tabBarStyle: { backgroundColor: colors.primary },
       })}
-      tabBarOptions={{
-        activeTintColor: 'tomato',
-        inactiveTintColor: 'gray',
-      }}
     >
       <Tab.Screen name="Recipes" component={RecipesScreen} />
       <Tab.Screen name="Ingredients" component={IngredientsScreen} />
@@ -62,6 +65,7 @@ export default function App() {
         <Stack.Navigator initialRouteName="Main">
           <Stack.Screen name="Main" component={MainTabs} options={{ headerShown: false }} />
           <Stack.Screen name="AddMyIngredient" component={AddMyIngredient} />
+          <Stack.Screen name="AddMyDish" component={AddMyDish} />
         </Stack.Navigator>
       </NavigationContainer>
     </IngredientProvider>
