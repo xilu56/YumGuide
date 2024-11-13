@@ -3,19 +3,18 @@ import { Text, StyleSheet, Pressable } from 'react-native';
 import getColors from '../Helper/colors';
 
 const colors = getColors();
-const { cancel: cancelColor, button: buttonColor, accent, primary, buttonText } = colors; // Destructure the color values
 
 export default function Button({ title, onPress, style }) {
-
-  const backgroundColor = title === 'Cancel' ? cancelColor : buttonColor;
+  const backgroundColor = title === 'Cancel' ? colors.primary : colors.accent;
+  const buttonText = title === 'Save' ? colors.primary : colors.accent;
 
   return (
     <Pressable
       onPress={onPress}
-      android_ripple={{ color: accent }}
+      android_ripple={{ color: colors.ripple }}
       style={({ pressed }) => [
         styles.button,
-        { backgroundColor: pressed ? primary : backgroundColor },
+        { backgroundColor: pressed ? colors.accent : backgroundColor },
         style,
       ]}
     >

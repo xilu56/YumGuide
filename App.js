@@ -4,13 +4,14 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 
-// Import your screens
 import RecipesScreen from './screens/RecipesScreen';
 import IngredientsScreen from './screens/IngredientsScreen';
 import DishGalleryScreen from './screens/DishGalleryScreen';
 import StoreLocationScreen from './screens/StoreLocationScreen';
 import ReminderScreen from './screens/ReminderScreen';
 import AddMyIngredient from './screens/AddMyIngredient';
+
+import { IngredientProvider } from './Context/IngredientContext';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -56,12 +57,13 @@ function MainTabs() {
 // Main App component
 export default function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="Main">
-        <Stack.Screen name="Main" component={MainTabs} options={{ headerShown: false }} />
-        <Stack.Screen name="AddMyIngredient" component={AddMyIngredient} />
-        {/* Add more detailed screens if needed */}
-      </Stack.Navigator>
-    </NavigationContainer>
+    <IngredientProvider>
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="Main">
+          <Stack.Screen name="Main" component={MainTabs} options={{ headerShown: false }} />
+          <Stack.Screen name="AddMyIngredient" component={AddMyIngredient} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </IngredientProvider>
   );
 }

@@ -1,11 +1,18 @@
-import React, { useState, useLayoutEffect } from 'react';
+import React, { useState, useLayoutEffect, useEffect } from 'react';
 import { View, StyleSheet, Pressable, FlatList, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import ItemsList from '../Components/ItemsList';
 
-export default function IngredientsScreen({ navigation }) {
+export default function IngredientsScreen({ navigation, route }) {
   const [ingredients, setIngredients] = useState([]);
 
-  // 设置头部布局和动作
+  // Listen for focus event to refresh the ingredients list
+  useEffect(() => {
+    if (route.params?.newIngredient) {
+      setIngredients(prevIngredients => [...prevIngredients, route.params.newIngredient]);
+    }
+  }, [route.params?.newIngredient]);
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -21,12 +28,10 @@ export default function IngredientsScreen({ navigation }) {
     });
   }, [navigation]);
 
-  // 处理单项点击事件以导航到编辑页面
   const handleItemPress = (ingredient) => {
     navigation.navigate('AddMyIngredient', { ingredient });
   };
 
-  // 渲染每个食材项目
   const renderItem = ({ item }) => (
     <Pressable onPress={() => handleItemPress(item)} style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }]}>
       <View style={styles.item}>
@@ -37,11 +42,7 @@ export default function IngredientsScreen({ navigation }) {
 
   return (
     <View style={styles.screen}>
-      <FlatList
-        data={ingredients}
-        keyExtractor={(item) => item.id}
-        renderItem={renderItem}
-      />
+      <ItemsList items={ingredients} onItemPress={handleItemPress} />
     </View>
   );
 }
