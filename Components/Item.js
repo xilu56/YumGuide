@@ -13,7 +13,7 @@ export default function Item({ item }) {
         {item.name || item.description}
       </Text>
       <ItemDetails
-        content={item.quantity && item.unit ? `${item.quantity} ${item.unit}` : item.date}
+        content={item.quantity && item.unit ? `${item.quantity} ${item.unit}` : item.dateTime}
       />
     </View>
   );

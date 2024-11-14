@@ -8,7 +8,8 @@ export default function AddMyReminder({ navigation }) {
   const { addReminder } = useContext(ReminderContext);
   const [reminderDate, setReminderDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [description, setDescription] = useState(''); // New state for description
+  const [showTimePicker, setShowTimePicker] = useState(false);
+  const [description, setDescription] = useState('');
 
   const handleSave = () => {
     if (!description.trim()) {
@@ -16,10 +17,12 @@ export default function AddMyReminder({ navigation }) {
       return;
     }
 
+    const formattedDateTime = `${reminderDate.toDateString()}, ${reminderDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+
     const newReminder = {
       title: "Reminder",
-      date: reminderDate.toDateString(),
-      description: description.trim(), // Include description in the reminder
+      dateTime: formattedDateTime,
+      description: description.trim(),
     };
 
     addReminder(newReminder);
@@ -52,7 +55,32 @@ export default function AddMyReminder({ navigation }) {
           onChange={(event, selectedDate) => {
             setShowDatePicker(false);
             if (selectedDate) {
-              setReminderDate(selectedDate);
+              setReminderDate(prevDate => new Date(
+                selectedDate.setHours(prevDate.getHours(), prevDate.getMinutes())
+              ));
+            }
+          }}
+        />
+      )}
+
+      <Text style={styles.label}>Select Time *</Text>
+      <TouchableWithoutFeedback onPress={() => setShowTimePicker(true)}>
+        <View style={styles.input}>
+          <Text>{reminderDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
+        </View>
+      </TouchableWithoutFeedback>
+
+      {showTimePicker && (
+        <DateTimePicker
+          value={reminderDate}
+          mode="time"
+          display="default"
+          onChange={(event, selectedTime) => {
+            setShowTimePicker(false);
+            if (selectedTime) {
+              setReminderDate(prevDate => new Date(
+                prevDate.setHours(selectedTime.getHours(), selectedTime.getMinutes())
+              ));
             }
           }}
         />

@@ -2,13 +2,13 @@ import React, { useContext, useLayoutEffect } from 'react';
 import { View, StyleSheet, Pressable, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import ItemsList from '../Components/ItemsList';
-import { ReminderContext } from '../Context/ReminderContext'; // Import ReminderContext
+import { ReminderContext } from '../Context/ReminderContext';
 import getColors from '../Helper/colors';
 
 const colors = getColors();
 
 export default function ReminderScreen({ navigation }) {
-  const { reminders } = useContext(ReminderContext); // Get reminders from context
+  const { reminders } = useContext(ReminderContext);
 
   useLayoutEffect(() => {
     navigation.setOptions({
