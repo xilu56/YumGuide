@@ -9,7 +9,7 @@ const { primary, white } = colors;
 export default function Item({ item }) {
   return (
     <View style={[styles.itemContainer, { backgroundColor: primary }]}>
-      <Text style={[styles.itemName, { color: white }]}>
+      <Text style={[styles.itemName, { color: colors.white  }]}>
         {item.name || item.description}
       </Text>
       <ItemDetails

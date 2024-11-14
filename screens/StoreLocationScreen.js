@@ -14,7 +14,7 @@ const StoreLocationScreen = ({ navigation }) => {
 
   return (
     <View style={styles.screen}>
-      <Text style={styles.text}>Store Location</Text>
+      <Text style={styles.text}>Store</Text>
     </View>
   );
 };

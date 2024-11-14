@@ -8,14 +8,14 @@ import getColors from '../Helper/colors';
 const colors = getColors();
 
 export default function ReminderScreen({ navigation }) {
-  const { reminders, deleteReminder } = useContext(ReminderContext); // Include deleteReminder
+  const { reminders, deleteReminder } = useContext(ReminderContext);
 
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
         <View style={{ flexDirection: 'row', marginRight: 15 }}>
           <Pressable
-            onPress={() => navigation.navigate('AddMyReminder', { isEditing: false })}
+            onPress={() => navigation.navigate('AddEditMyReminder', { isEditing: false })}
             style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }]}
           >
             <Ionicons name="add" size={24} color={colors.white} style={{ marginRight: 5 }} />
@@ -29,11 +29,11 @@ export default function ReminderScreen({ navigation }) {
   }, [navigation]);
 
   const handleItemPress = (reminder) => {
-    navigation.navigate('AddMyReminder', { isEditing: true, reminder });
+    navigation.navigate('AddEditMyReminder', { isEditing: true, reminder });
   };
 
   const handleDeletePress = (id) => {
-    deleteReminder(id); // Call deleteReminder from the context
+    deleteReminder(id);
   };
 
   return (
@@ -41,7 +41,7 @@ export default function ReminderScreen({ navigation }) {
       <ItemsList
         items={reminders}
         onItemPress={handleItemPress}
-        onDeletePress={handleDeletePress} // Pass delete function to ItemsList
+        onDeletePress={handleDeletePress}
       />
     </View>
   );

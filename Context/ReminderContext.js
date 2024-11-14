@@ -9,12 +9,16 @@ export const ReminderProvider = ({ children }) => {
 
   // Fetch reminders from Firestore
   const fetchReminders = async () => {
-    const querySnapshot = await getDocs(collection(database, "Reminders"));
-    const reminderList = querySnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-    setReminders(reminderList);
+    try {
+      const querySnapshot = await getDocs(collection(database, "Reminders"));
+      const reminderList = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setReminders(reminderList);
+    } catch (err) {
+      console.error("Error fetching reminders:", err);
+    }
   };
 
   // Add a reminder to Firestore
@@ -41,9 +45,9 @@ export const ReminderProvider = ({ children }) => {
   // Delete reminder from Firestore and update local state
   const deleteReminder = async (id) => {
     try {
-      const reminderRef = doc(database, "MyReminders", id);
+      const reminderRef = doc(database, "Reminders", id);
       await deleteDoc(reminderRef);
-      setReminders(reminders.filter(reminder => reminder.id !== id));
+      setReminders(reminders.filter(reminder => reminder.id !== id)); // Update local state
     } catch (err) {
       console.error("Error deleting reminder:", err);
     }
