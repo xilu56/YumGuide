@@ -12,9 +12,9 @@ export default function Item({ item }) {
       {item.url && (
         <Image source={{ uri: item.url }} style={styles.image} />
       )}
-      <Text style={[styles.itemName, { color: white }]}>
-        {item.name || item.description}
-      </Text>
+    <Text style={[styles.itemName, { color: white }]}>
+    <Text>{String(item.name || item.description)}</Text>
+    </Text>
       <ItemDetails
         content={item.quantity && item.unit ? `${item.quantity} ${item.unit}` : `${item.date} ${item.time}`}
       />

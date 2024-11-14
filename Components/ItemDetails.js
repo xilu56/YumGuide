@@ -8,9 +8,9 @@ const { white, primary } = colors;
 export default function ItemDetails({ content }) {
   return (
     <View style={styles.itemDetails}>
-      <Text style={[styles.itemBox, { backgroundColor: white, color: primary }]}>
-        {content}
-      </Text>
+    <Text style={[styles.itemBox, { backgroundColor: white, color: primary }]}>
+      {content}
+    </Text>
     </View>
   );
 }

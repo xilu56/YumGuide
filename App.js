@@ -56,14 +56,16 @@ export default function App() {
   return (
     <IngredientProvider>
       <ReminderProvider>
-        <NavigationContainer>
-          <Stack.Navigator initialRouteName="Main">
-            <Stack.Screen name="Main" component={MainTabs} options={{ headerShown: false }} />
-            <Stack.Screen name="AddEditMyIngredient" component={AddEditMyIngredient} />
-            <Stack.Screen name="AddMyDish" component={AddMyDish} />
-            <Stack.Screen name="AddEditMyReminder" component={AddEditMyReminder} />
-          </Stack.Navigator>
-        </NavigationContainer>
+        <DishProvider>
+          <NavigationContainer>
+            <Stack.Navigator initialRouteName="Main">
+              <Stack.Screen name="Main" component={MainTabs} options={{ headerShown: false }} />
+              <Stack.Screen name="AddEditMyIngredient" component={AddEditMyIngredient} />
+              <Stack.Screen name="AddMyDish" component={AddMyDish} />
+              <Stack.Screen name="AddEditMyReminder" component={AddEditMyReminder} />
+            </Stack.Navigator>
+          </NavigationContainer>
+        </DishProvider>
       </ReminderProvider>
     </IngredientProvider>
   );
