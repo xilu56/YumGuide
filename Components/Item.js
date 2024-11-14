@@ -1,14 +1,23 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Image } from 'react-native';
 import ItemDetails from './ItemDetails';
+import getColors from '../Helper/colors';
 
-export default function Item({ item}) {
+const colors = getColors();
+const { primary, white } = colors;
+
+export default function Item({ item }) {
   return (
     <View style={[styles.itemContainer, { backgroundColor: primary }]}>
-      <Text style={[styles.itemName, { color: white }]}>
-        {item.name || item.description}
-      </Text>
-      <ItemDetails item={item}/>
+      {item.url && (
+        <Image source={{ uri: item.url }} style={styles.image} />
+      )}
+    <Text style={[styles.itemName, { color: white }]}>
+    <Text>{String(item.name || item.description)}</Text>
+    </Text>
+      <ItemDetails
+        content={item.quantity && item.unit ? `${item.quantity} ${item.unit}` : `${item.date} ${item.time}`}
+      />
     </View>
   );
 }
@@ -25,5 +34,11 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: 'bold',
     flex: 1,
+  },
+  image: {
+    width: 50,
+    height: 50,
+    borderRadius: 5,
+    marginRight: 10,
   },
 });

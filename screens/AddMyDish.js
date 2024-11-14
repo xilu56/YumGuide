@@ -1,52 +1,58 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, Alert, StyleSheet, TouchableWithoutFeedback } from 'react-native';
-import Button from '../Components/Button';
+import React, { useState, useContext, useEffect } from 'react';
+import { View, Text, Button, StyleSheet, Alert, TouchableOpacity } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { DishContext } from '../Context/DishContext';
 
-export default function AddMyDish({ navigation }) {
-  const [photo, setPhoto] = useState('');
-  const [photoDate, setPhotoDate] = useState(new Date());
+export default function AddMyDish({ navigation, route }) {
+  const { isEditing, dish } = route.params || {};
+  const { addDish, updateDish } = useContext(DishContext);
+
+  const [photoDate, setPhotoDate] = useState(isEditing && dish ? new Date(dish.date) : new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
 
-  const handleSave = () => {
-    if (photo.trim() === '') {
-      Alert.alert('Error', 'Please enter a photo name or path.');
-      return;
+  useEffect(() => {
+    navigation.setOptions({
+      title: isEditing ? 'Edit Dish' : 'Record Your Dish',
+    });
+  }, [isEditing, navigation]);
+
+  const handleSave = async () => {
+    const newDishData = { date: photoDate.toDateString() };
+
+    if (isEditing) {
+      updateDish(dish.id, newDishData);
+      Alert.alert('Success', 'Dish updated successfully!');
+    } else {
+      await addDish(newDishData);
+      Alert.alert('Success', 'Dish added successfully!');
     }
 
-    // Logic for saving the data locally or to some state can be added here
-    Alert.alert('Success', 'Dish photo saved successfully!');
     navigation.goBack();
-  };
-
-  const handleDateChange = (event, selectedDate) => {
-    const currentDate = selectedDate || photoDate;
-    setShowDatePicker(false);
-    setPhotoDate(currentDate);
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Photo Name/Path *</Text>
-      <TextInput
-        style={styles.input}
-        value={photo}
-        onChangeText={setPhoto}
-      />
+      <Text style={styles.infoText}>Please take a photo of your dish</Text>
+      
+      <TouchableOpacity style={styles.photoButton}>
+        <Text style={styles.photoButtonText}>Take a Photo</Text>
+      </TouchableOpacity>
 
-      <Text style={styles.label}>Photo Date</Text>
-      <TouchableWithoutFeedback onPress={() => setShowDatePicker(true)}>
-        <View style={styles.input}>
-          <Text>{photoDate.toDateString()}</Text>
-        </View>
-      </TouchableWithoutFeedback>
-
+      <Text style={styles.label}>Select Date *</Text>
+      <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.datePicker}>
+      <Text>{photoDate.toDateString()}</Text>
+      </TouchableOpacity>
       {showDatePicker && (
         <DateTimePicker
           value={photoDate}
           mode="date"
           display="default"
-          onChange={handleDateChange}
+          onChange={(event, selectedDate) => {
+            setShowDatePicker(false);
+            if (selectedDate) {
+              setPhotoDate(selectedDate);
+            }
+          }}
         />
       )}
 
@@ -62,25 +68,42 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#f5f5f5',
+    justifyContent: 'center',
   },
-  label: {
-    fontSize: 16,
+  infoText: {
+    fontSize: 18,
+    marginBottom: 15,
     fontWeight: 'bold',
-    marginVertical: 10,
-    color: '#333',
+    textAlign: 'center',
   },
-  input: {
+  photoButton: {
+    padding: 15,
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 5,
+    backgroundColor: '#e0e0e0',
+    alignItems: 'center',
+    marginBottom: 30,
+  },
+  photoButtonText: {
+    fontSize: 16,
+  },
+  label: {
+    fontSize: 16,
+    marginBottom: 10,
+    fontWeight: 'bold',
+  },
+  datePicker: {
     padding: 10,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
     backgroundColor: '#fff',
-    marginBottom: 15,
+    marginBottom: 30,
+    alignItems: 'center',
   },
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 20,
   },
 });

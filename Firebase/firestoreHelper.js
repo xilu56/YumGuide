@@ -1,13 +1,9 @@
-import {
-    addDoc,
-    collection,
-    deleteDoc,
-    doc,
-    getDocs,
-    updateDoc,
-  } from "firebase/firestore";
-  import { getDownloadURL, ref, uploadBytes, deleteObject } from "firebase/storage";
-  import { database, storage } from "./firebaseSetup";
+import { addDoc, collection, deleteDoc, doc, getDocs, updateDoc } from "firebase/firestore";
+import { getDownloadURL, ref, uploadBytes, deleteObject } from "firebase/storage";
+import { database, storage } from "./firebaseSetup";
+import * as FileSystem from 'expo-file-system';
+import { Asset } from 'expo-asset';
+
   
   // MyIngredients CRUD
   export async function addIngredient(data) {
@@ -52,26 +48,36 @@ import {
   }
   
   // Gallery CRUD with Firebase Storage integration
-  export async function addPhoto(file, photoData) {
+  export async function addPhoto(fileName, photoData) {
     try {
-      // Upload the file to Firebase Storage
-      const storageRef = ref(storage, `gallery/${file.name}`);
-      await uploadBytes(storageRef, file);
+      const fileMap = {
+        'test.png': require('../assets/test.png'),
+      };
   
-      // Get the download URL for the uploaded file
+      if (!fileMap[fileName]) throw new Error('File not found in assets.');
+  
+      const asset = Asset.fromModule(fileMap[fileName]);
+      await asset.downloadAsync();
+      const fileUri = asset.localUri;
+  
+      const storageRef = ref(storage, `gallery/${fileName}`);
+      const response = await fetch(fileUri);
+      const blob = await response.blob();
+      await uploadBytes(storageRef, blob);
+  
       const url = await getDownloadURL(storageRef);
   
-      // Save the URL and additional metadata in Firestore
-      const docRef = await addDoc(collection(database, "Gallery"), {
+      const docRef = await addDoc(collection(database, 'Gallery'), {
         ...photoData,
         url,
-        filename: file.name,
+        filename: fileName,
       });
   
-      console.log("Photo added:", docRef.id);
+      console.log('Photo added:', docRef.id);
       return docRef.id;
     } catch (err) {
-      console.error("Error adding photo:", err);
+      console.error('Error adding photo:', err);
+      throw new Error('Failed to upload photo.');
     }
   }
   
@@ -107,6 +113,7 @@ import {
         id: docSnap.id,
         ...docSnap.data(),
       }));
+      console.log("Fetched photos:", photos);
       return photos;
     } catch (err) {
       console.error("Error fetching photos:", err);

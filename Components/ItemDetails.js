@@ -1,24 +1,16 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import getColors from '../Helper/colors';
 
-export default function ItemDetails({ item, theme }) {
+const colors = getColors();
+const { white, primary } = colors;
+
+export default function ItemDetails({ content }) {
   return (
     <View style={styles.itemDetails}>
-      {item.special && (
-        <Ionicons
-          name="warning"
-          size={20}
-          color="#FFC107"
-          style={styles.warningIcon}
-        />
-      )}
-      <Text style={[styles.itemDate, { backgroundColor: white, color: primary }]}>
-        {item.date}
-      </Text>
-      <Text style={[styles.itemValue, { backgroundColor: white, color: primary }]}>
-        {item.value || `${item.calories}`}
-      </Text>
+    <Text style={[styles.itemBox, { backgroundColor: white, color: primary }]}>
+      {content}
+    </Text>
     </View>
   );
 }
@@ -28,16 +20,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  itemDate: {
+  itemBox: {
     padding: 5,
     borderRadius: 5,
-    marginRight: 10,
-  },
-  itemValue: {
-    padding: 5,
-    borderRadius: 5,
-  },
-  warningIcon: {
-    marginRight: 10,
+    fontSize: 12,
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
 });
