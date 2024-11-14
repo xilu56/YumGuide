@@ -38,10 +38,11 @@ export const ReminderProvider = ({ children }) => {
     }
   };
 
-  // Delete a reminder from Firestore
+  // Delete reminder from Firestore and update local state
   const deleteReminder = async (id) => {
     try {
-      await deleteDoc(doc(database, "Reminders", id));
+      const reminderRef = doc(database, "MyReminders", id);
+      await deleteDoc(reminderRef);
       setReminders(reminders.filter(reminder => reminder.id !== id));
     } catch (err) {
       console.error("Error deleting reminder:", err);

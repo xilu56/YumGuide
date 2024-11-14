@@ -8,7 +8,7 @@ import getColors from '../Helper/colors';
 const colors = getColors();
 
 export default function ReminderScreen({ navigation }) {
-  const { reminders } = useContext(ReminderContext);
+  const { reminders, deleteReminder } = useContext(ReminderContext); // Include deleteReminder
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -32,9 +32,17 @@ export default function ReminderScreen({ navigation }) {
     navigation.navigate('AddMyReminder', { isEditing: true, reminder });
   };
 
+  const handleDeletePress = (id) => {
+    deleteReminder(id); // Call deleteReminder from the context
+  };
+
   return (
     <View style={styles.screen}>
-      <ItemsList items={reminders} onItemPress={handleItemPress} />
+      <ItemsList
+        items={reminders}
+        onItemPress={handleItemPress}
+        onDeletePress={handleDeletePress} // Pass delete function to ItemsList
+      />
     </View>
   );
 }
