@@ -1,5 +1,5 @@
 import React, { useContext, useLayoutEffect } from 'react';
-import { View, StyleSheet, Pressable, Text } from 'react-native';
+import { View, StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import ItemsList from '../Components/ItemsList';
 import { ReminderContext } from '../Context/ReminderContext';
@@ -14,7 +14,10 @@ export default function ReminderScreen({ navigation }) {
     navigation.setOptions({
       headerRight: () => (
         <View style={{ flexDirection: 'row', marginRight: 15 }}>
-          <Pressable onPress={() => navigation.navigate('AddMyReminder')} style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }]}>
+          <Pressable
+            onPress={() => navigation.navigate('AddMyReminder', { isEditing: false })}
+            style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }]}
+          >
             <Ionicons name="add" size={24} color={colors.white} style={{ marginRight: 5 }} />
           </Pressable>
           <Ionicons name="alarm" size={24} color={colors.white} />
@@ -26,7 +29,7 @@ export default function ReminderScreen({ navigation }) {
   }, [navigation]);
 
   const handleItemPress = (reminder) => {
-    navigation.navigate('AddMyReminder', { reminder });
+    navigation.navigate('AddMyReminder', { isEditing: true, reminder });
   };
 
   return (

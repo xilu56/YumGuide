@@ -1,15 +1,23 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { View, Text, Alert, StyleSheet, TouchableWithoutFeedback, TextInput } from 'react-native';
 import Button from '../Components/Button';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { ReminderContext } from '../Context/ReminderContext';
 
-export default function AddMyReminder({ navigation }) {
-  const { addReminder } = useContext(ReminderContext);
-  const [reminderDate, setReminderDate] = useState(new Date());
+export default function AddMyReminder({ navigation, route }) {
+  const { isEditing, reminder } = route.params || {};
+  const { addReminder, updateReminder } = useContext(ReminderContext);
+
+  const [reminderDate, setReminderDate] = useState(isEditing ? new Date(reminder.dateTime) : new Date());
+  const [description, setDescription] = useState(isEditing ? reminder.description : '');
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
-  const [description, setDescription] = useState('');
+
+  useEffect(() => {
+    navigation.setOptions({
+      title: isEditing ? 'Edit Reminder' : 'Add Reminder',
+    });
+  }, [isEditing, navigation]);
 
   const handleSave = () => {
     if (!description.trim()) {
@@ -18,15 +26,20 @@ export default function AddMyReminder({ navigation }) {
     }
 
     const formattedDateTime = `${reminderDate.toDateString()}, ${reminderDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
-
     const newReminder = {
       title: "Reminder",
       dateTime: formattedDateTime,
       description: description.trim(),
     };
 
-    addReminder(newReminder);
-    Alert.alert('Success', 'Reminder saved successfully!');
+    if (isEditing) {
+      updateReminder(reminder.id, newReminder);
+      Alert.alert('Success', 'Reminder updated successfully!');
+    } else {
+      addReminder(newReminder);
+      Alert.alert('Success', 'Reminder saved successfully!');
+    }
+
     navigation.goBack();
   };
 
