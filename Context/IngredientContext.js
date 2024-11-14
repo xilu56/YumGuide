@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react';
-import { addDoc, collection, getDocs } from "firebase/firestore";
+import { addDoc, collection, getDocs, updateDoc, doc } from "firebase/firestore";
 import { database } from '../Firebase/firebaseSetup';
 
 export const IngredientContext = createContext();
@@ -9,12 +9,16 @@ export const IngredientProvider = ({ children }) => {
 
   // Fetch ingredients from Firestore
   const getIngredients = async () => {
-    const querySnapshot = await getDocs(collection(database, "MyIngredients"));
-    const ingredientList = querySnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-    setIngredients(ingredientList);
+    try {
+      const querySnapshot = await getDocs(collection(database, "MyIngredients"));
+      const ingredientList = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setIngredients(ingredientList);
+    } catch (err) {
+      console.error("Error fetching ingredients:", err);
+    }
   };
 
   // Add ingredient to Firestore and update local state
@@ -27,12 +31,25 @@ export const IngredientProvider = ({ children }) => {
     }
   };
 
+  // Update ingredient in Firestore and update local state
+  const updateIngredient = async (id, updatedIngredient) => {
+    try {
+      const ingredientRef = doc(database, "MyIngredients", id);
+      await updateDoc(ingredientRef, updatedIngredient);
+      setIngredients(ingredients.map(ingredient =>
+        ingredient.id === id ? { ...ingredient, ...updatedIngredient } : ingredient
+      ));
+    } catch (err) {
+      console.error("Error updating ingredient:", err);
+    }
+  };
+
   useEffect(() => {
     getIngredients();
   }, []);
 
   return (
-    <IngredientContext.Provider value={{ ingredients, addIngredient }}>
+    <IngredientContext.Provider value={{ ingredients, addIngredient, updateIngredient }}>
       {children}
     </IngredientContext.Provider>
   );
