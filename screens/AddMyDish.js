@@ -1,58 +1,54 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Alert, StyleSheet, TouchableWithoutFeedback } from 'react-native';
-import Button from '../Components/Button';
+import { View, Text, Button, StyleSheet, Alert } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { addPhoto } from '../Firebase/firestoreHelper';
 
 export default function AddMyDish({ navigation }) {
-  const [photo, setPhoto] = useState('');
   const [photoDate, setPhotoDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
 
-  const handleSave = () => {
-    if (photo.trim() === '') {
-      Alert.alert('Error', 'Please enter a photo name or path.');
-      return;
+  const handleSave = async () => {
+    try {
+      const photoData = { date: photoDate.toDateString() };
+
+      const docId = await addPhoto('test.png', photoData);
+
+      if (docId) {
+        Alert.alert('Success', 'Dish photo saved successfully!');
+        navigation.goBack();
+      } else {
+        Alert.alert('Error', 'Failed to upload photo.');
+      }
+    } catch (err) {
+      console.error("Error saving dish photo:", err);
+      Alert.alert('Error', 'An error occurred while saving the photo.');
     }
-
-    // Logic for saving the data locally or to some state can be added here
-    Alert.alert('Success', 'Dish photo saved successfully!');
-    navigation.goBack();
-  };
-
-  const handleDateChange = (event, selectedDate) => {
-    const currentDate = selectedDate || photoDate;
-    setShowDatePicker(false);
-    setPhotoDate(currentDate);
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Photo Name/Path *</Text>
-      <TextInput
-        style={styles.input}
-        value={photo}
-        onChangeText={setPhoto}
-      />
-
       <Text style={styles.label}>Photo Date</Text>
-      <TouchableWithoutFeedback onPress={() => setShowDatePicker(true)}>
-        <View style={styles.input}>
-          <Text>{photoDate.toDateString()}</Text>
-        </View>
-      </TouchableWithoutFeedback>
-
+      <Text onPress={() => setShowDatePicker(true)} style={styles.dateText}>
+        {photoDate.toDateString()}
+      </Text>
+      
       {showDatePicker && (
         <DateTimePicker
           value={photoDate}
           mode="date"
           display="default"
-          onChange={handleDateChange}
+          onChange={(event, selectedDate) => {
+            setShowDatePicker(false);
+            if (selectedDate) {
+              setPhotoDate(selectedDate);
+            }
+          }}
         />
       )}
 
       <View style={styles.buttonContainer}>
-        <Button title="Cancel" onPress={() => navigation.goBack()} />
-        <Button title="Save" onPress={handleSave} />
+        <Button title="Cancel" onPress={() => navigation.goBack()} color="#6A0DAD" />
+        <Button title="Save" onPress={handleSave} color="#FFD700" />
       </View>
     </View>
   );
@@ -68,15 +64,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     marginVertical: 10,
-    color: '#333',
   },
-  input: {
+  dateText: {
+    padding: 10,
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 5,
-    padding: 10,
     backgroundColor: '#fff',
     marginBottom: 15,
+    textAlign: 'center',
   },
   buttonContainer: {
     flexDirection: 'row',

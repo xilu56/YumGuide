@@ -1,20 +1,24 @@
-import React, { useState, useLayoutEffect, useEffect } from 'react';
-import { View, StyleSheet, Pressable, Text } from 'react-native';
+import React, { useState, useLayoutEffect, useEffect, useContext } from 'react';
+import { View, StyleSheet, Pressable, Text, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import ItemsList from '../Components/ItemsList';
 import getColors from '../Helper/colors';
+import { getPhotos } from '../Firebase/firestoreHelper';
+import { DishContext } from '../Context/DishContext';
 
 const colors = getColors();
 
-export default function DishGalleryScreen({ navigation, route }) {
+export default function DishGalleryScreen({ navigation }) {
   const [dishes, setDishes] = useState([]);
+  const { deleteDish } = useContext(DishContext);
 
-  // Listen for focus event to refresh the dish gallery list
   useEffect(() => {
-    if (route.params?.newDish) {
-      setDishes(prevDishes => [...prevDishes, route.params.newDish]);
+    async function fetchPhotos() {
+      const photos = await getPhotos();
+      setDishes(photos);
     }
-  }, [route.params?.newDish]);
+    fetchPhotos();
+  }, []);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -35,17 +39,18 @@ export default function DishGalleryScreen({ navigation, route }) {
     navigation.navigate('AddMyDish', { dish });
   };
 
-  const renderItem = ({ item }) => (
-    <Pressable onPress={() => handleItemPress(item)} style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }]}>
-      <View style={styles.item}>
-        <Text style={{ color: colors.text }}>{item.name} - {item.quantity} {item.unit}</Text>
-      </View>
-    </Pressable>
-  );
+  const handleDeletePress = (id) => {
+    deleteDish(id);
+    setDishes(dishes.filter(dish => dish.id !== id));
+  };
 
   return (
     <View style={styles.screen}>
-      <ItemsList items={dishes} onItemPress={handleItemPress} />
+      <ItemsList 
+        items={dishes} 
+        onItemPress={handleItemPress} 
+        onDeletePress={handleDeletePress}
+      />
     </View>
   );
 }
@@ -57,9 +62,17 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   item: {
+    flexDirection: 'row',
+    alignItems: 'center',
     padding: 10,
     marginVertical: 5,
     backgroundColor: colors.gray,
     borderRadius: 5,
+  },
+  image: {
+    width: 50,
+    height: 50,
+    borderRadius: 5,
+    marginRight: 10,
   },
 });

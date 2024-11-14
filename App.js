@@ -14,7 +14,8 @@ import AddMyDish from './screens/AddMyDish';
 import AddMyReminder from './screens/AddMyReminder';
 
 import { IngredientProvider } from './Context/IngredientContext';
-import { ReminderProvider } from './Context/ReminderContext'; // Import ReminderProvider
+import { ReminderProvider } from './Context/ReminderContext';
+import { DishProvider } from './Context/DishContext'; // Import DishProvider
 import getColors from './Helper/colors';
 
 const colors = getColors();
@@ -55,14 +56,16 @@ export default function App() {
   return (
     <IngredientProvider>
       <ReminderProvider>
-        <NavigationContainer>
-          <Stack.Navigator initialRouteName="Main">
-            <Stack.Screen name="Main" component={MainTabs} options={{ headerShown: false }} />
-            <Stack.Screen name="AddEditMyIngredient" component={AddEditMyIngredient} />
-            <Stack.Screen name="AddMyDish" component={AddMyDish} />
-            <Stack.Screen name="AddMyReminder" component={AddMyReminder} />
-          </Stack.Navigator>
-        </NavigationContainer>
+        <DishProvider>
+          <NavigationContainer>
+            <Stack.Navigator initialRouteName="Main">
+              <Stack.Screen name="Main" component={MainTabs} options={{ headerShown: false }} />
+              <Stack.Screen name="AddEditMyIngredient" component={AddEditMyIngredient} />
+              <Stack.Screen name="AddMyDish" component={AddMyDish} />
+              <Stack.Screen name="AddMyReminder" component={AddMyReminder} />
+            </Stack.Navigator>
+          </NavigationContainer>
+        </DishProvider>
       </ReminderProvider>
     </IngredientProvider>
   );
