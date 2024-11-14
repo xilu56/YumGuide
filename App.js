@@ -14,43 +14,27 @@ import AddMyDish from './screens/AddMyDish';
 import AddMyReminder from './screens/AddMyReminder';
 
 import { IngredientProvider } from './Context/IngredientContext';
+import { ReminderProvider } from './Context/ReminderContext'; // Import ReminderProvider
 import getColors from './Helper/colors';
 
 const colors = getColors();
-
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-// Tab Navigator for main screens
 function MainTabs() {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
         tabBarIcon: ({ color, size }) => {
           let iconName;
-
-          // Set the Ionicons icon names based on the route
           switch (route.name) {
-            case 'Recipes':
-              iconName = 'fast-food-outline';
-              break;
-            case 'Ingredients':
-              iconName = 'nutrition-outline';
-              break;
-            case 'Dish Gallery':
-              iconName = 'image-outline';
-              break;
-            case 'Store Location':
-              iconName = 'cart-outline';
-              break;
-            case 'Reminder':
-              iconName = 'notifications-outline';
-              break;
-            default:
-              iconName = 'help-circle-outline';
-              break;
+            case 'Recipes': iconName = 'fast-food-outline'; break;
+            case 'Ingredients': iconName = 'nutrition-outline'; break;
+            case 'Dish Gallery': iconName = 'image-outline'; break;
+            case 'Store Location': iconName = 'cart-outline'; break;
+            case 'Reminder': iconName = 'notifications-outline'; break;
+            default: iconName = 'help-circle-outline'; break;
           }
-
           return <Ionicons name={iconName} size={size} color={color} />;
         },
         tabBarActiveTintColor: colors.accent,
@@ -67,18 +51,19 @@ function MainTabs() {
   );
 }
 
-// Main App component
 export default function App() {
   return (
     <IngredientProvider>
-      <NavigationContainer>
-        <Stack.Navigator initialRouteName="Main">
-          <Stack.Screen name="Main" component={MainTabs} options={{ headerShown: false }} />
-          <Stack.Screen name="AddMyIngredient" component={AddMyIngredient} />
-          <Stack.Screen name="AddMyDish" component={AddMyDish} />
-          <Stack.Screen name="AddMyReminder" component={AddMyReminder} />
-        </Stack.Navigator>
-      </NavigationContainer>
+      <ReminderProvider>
+        <NavigationContainer>
+          <Stack.Navigator initialRouteName="Main">
+            <Stack.Screen name="Main" component={MainTabs} options={{ headerShown: false }} />
+            <Stack.Screen name="AddMyIngredient" component={AddMyIngredient} />
+            <Stack.Screen name="AddMyDish" component={AddMyDish} />
+            <Stack.Screen name="AddMyReminder" component={AddMyReminder} />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </ReminderProvider>
     </IngredientProvider>
   );
 }

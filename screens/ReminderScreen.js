@@ -1,20 +1,14 @@
-import React, { useState, useLayoutEffect, useEffect } from 'react';
+import React, { useContext, useLayoutEffect } from 'react';
 import { View, StyleSheet, Pressable, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import ItemsList from '../Components/ItemsList';
+import { ReminderContext } from '../Context/ReminderContext'; // Import ReminderContext
 import getColors from '../Helper/colors';
 
 const colors = getColors();
 
-export default function ReminderScreen({ navigation, route }) {
-  const [reminders, setReminders] = useState([]);
-
-  // Listen for focus event to refresh the reminders list
-  useEffect(() => {
-    if (route.params?.newReminder) {
-      setReminders(prevReminders => [...prevReminders, route.params.newReminder]);
-    }
-  }, [route.params?.newReminder]);
+export default function ReminderScreen({ navigation }) {
+  const { reminders } = useContext(ReminderContext); // Get reminders from context
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -35,14 +29,6 @@ export default function ReminderScreen({ navigation, route }) {
     navigation.navigate('AddMyReminder', { reminder });
   };
 
-  const renderItem = ({ item }) => (
-    <Pressable onPress={() => handleItemPress(item)} style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }]}>
-      <View style={styles.item}>
-        <Text style={{ color: colors.text }}>{item.title} - {item.date}</Text>
-      </View>
-    </Pressable>
-  );
-
   return (
     <View style={styles.screen}>
       <ItemsList items={reminders} onItemPress={handleItemPress} />
@@ -55,11 +41,5 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
     backgroundColor: colors.background,
-  },
-  item: {
-    padding: 10,
-    marginVertical: 5,
-    backgroundColor: colors.gray,
-    borderRadius: 5,
   },
 });

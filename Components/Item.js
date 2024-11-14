@@ -12,7 +12,9 @@ export default function Item({ item }) {
       <Text style={[styles.itemName, { color: white }]}>
         {item.name || item.description}
       </Text>
-      <ItemDetails item={item} />
+      <ItemDetails
+        content={item.quantity && item.unit ? `${item.quantity} ${item.unit}` : item.date}
+      />
     </View>
   );
 }
