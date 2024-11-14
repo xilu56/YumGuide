@@ -8,7 +8,11 @@ export default function AddMyReminder({ navigation, route }) {
   const { isEditing, reminder } = route.params || {};
   const { addReminder, updateReminder } = useContext(ReminderContext);
 
-  const [reminderDate, setReminderDate] = useState(isEditing ? new Date(reminder.dateTime) : new Date());
+  const initialDate = isEditing && reminder.date ? new Date(reminder.date) : new Date();
+  const initialTime = isEditing && reminder.time ? reminder.time : "12:00";
+
+  const [reminderDate, setReminderDate] = useState(initialDate);
+  const [reminderTime, setReminderTime] = useState(initialTime);
   const [description, setDescription] = useState(isEditing ? reminder.description : '');
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
@@ -25,10 +29,10 @@ export default function AddMyReminder({ navigation, route }) {
       return;
     }
 
-    const formattedDateTime = `${reminderDate.toDateString()}, ${reminderDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
     const newReminder = {
       title: "Reminder",
-      dateTime: formattedDateTime,
+      date: reminderDate.toISOString().split('T')[0],
+      time: reminderTime,
       description: description.trim(),
     };
 
@@ -68,9 +72,7 @@ export default function AddMyReminder({ navigation, route }) {
           onChange={(event, selectedDate) => {
             setShowDatePicker(false);
             if (selectedDate) {
-              setReminderDate(prevDate => new Date(
-                selectedDate.setHours(prevDate.getHours(), prevDate.getMinutes())
-              ));
+              setReminderDate(selectedDate);
             }
           }}
         />
@@ -79,21 +81,21 @@ export default function AddMyReminder({ navigation, route }) {
       <Text style={styles.label}>Select Time *</Text>
       <TouchableWithoutFeedback onPress={() => setShowTimePicker(true)}>
         <View style={styles.input}>
-          <Text>{reminderDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
+          <Text>{reminderTime}</Text>
         </View>
       </TouchableWithoutFeedback>
 
       {showTimePicker && (
         <DateTimePicker
-          value={reminderDate}
+          value={new Date(`${reminderDate.toISOString().split('T')[0]}T${reminderTime}:00`)}
           mode="time"
           display="default"
           onChange={(event, selectedTime) => {
             setShowTimePicker(false);
             if (selectedTime) {
-              setReminderDate(prevDate => new Date(
-                prevDate.setHours(selectedTime.getHours(), selectedTime.getMinutes())
-              ));
+              const hours = selectedTime.getHours().toString().padStart(2, '0');
+              const minutes = selectedTime.getMinutes().toString().padStart(2, '0');
+              setReminderTime(`${hours}:${minutes}`);
             }
           }}
         />
