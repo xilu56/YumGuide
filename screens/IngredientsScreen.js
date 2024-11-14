@@ -8,7 +8,7 @@ import getColors from '../Helper/colors';
 const colors = getColors();
 
 export default function IngredientsScreen({ navigation }) {
-  const { ingredients } = useContext(IngredientContext);
+  const { ingredients, deleteIngredient } = useContext(IngredientContext);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -32,9 +32,17 @@ export default function IngredientsScreen({ navigation }) {
     navigation.navigate('AddEditMyIngredient', { isEditing: true, ingredient });
   };
 
+  const handleDeletePress = (id) => {
+    deleteIngredient(id);
+  };
+
   return (
     <View style={styles.screen}>
-      <ItemsList items={ingredients} onItemPress={handleItemPress} />
+      <ItemsList
+        items={ingredients}
+        onItemPress={handleItemPress}
+        onDeletePress={handleDeletePress} // Pass the delete function to ItemsList
+      />
     </View>
   );
 }
