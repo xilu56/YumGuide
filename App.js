@@ -58,7 +58,7 @@ export default function App() {
         <NavigationContainer>
           <Stack.Navigator initialRouteName="Main">
             <Stack.Screen name="Main" component={MainTabs} options={{ headerShown: false }} />
-            <Stack.Screen name="AddMyIngredient" component={AddMyIngredient} />
+            <Stack.Screen name="AddEditMyIngredient" component={AddEditMyIngredient} />
             <Stack.Screen name="AddMyDish" component={AddMyDish} />
             <Stack.Screen name="AddMyReminder" component={AddMyReminder} />
           </Stack.Navigator>
