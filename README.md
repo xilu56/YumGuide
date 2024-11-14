@@ -54,3 +54,9 @@ Author: Zhuoyuan Liu
 * Added edit operations for all three collections to update user's new input.
 * Added delete operations for the dish gallery collection.
 * Fixed rendering bugs to improve the stability and responsiveness of the app.
+<img width="436" alt="Screenshot 2024-11-13 at 11 34 18 PM" src="https://github.com/user-attachments/assets/d17987f9-b3f3-45d9-ac96-48a0b248e9d7">
+<img width="434" alt="Screenshot 2024-11-13 at 11 34 40 PM" src="https://github.com/user-attachments/assets/243e1a8f-9a7f-479e-a8f8-95bf644915fe">
+<img width="450" alt="Screenshot 2024-11-13 at 11 34 51 PM" src="https://github.com/user-attachments/assets/a9cd5c61-ddb0-4e79-823a-f7648f671ae1">
+
+
+  
