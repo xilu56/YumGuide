@@ -26,6 +26,8 @@ Navigation has been implemented with intuitive logos that help users easily acce
 Design and Styling
 All screens have been refactored for consistency, ensuring a unified color palette and style that align with the app's theme.
 Contributions
+
+
 Author: Xi Lu
 * Completed navigation setup with logos.
 * Added a screen for users to create new ingredient entries (Create function).
@@ -34,14 +36,8 @@ Author: Xi Lu
 * Refactored screens and components for uniformity, updated color schemes, and fixed navigation references.
 
 
-
-Author: Zhuoyuan Liu
-## What I did?
-Overall goals: 
-Set up a firestore and use the firestore to Create, Read, Update and Delete 3 collections in our app.
-Detailed move:
-1st collection: My Ingredient. It allow user to add ingredient to My Ingredient page and edit/delete them.
-2nd collection: Gallery. It allow user to upload photos to the gallery to record their dishes.
-3rd collection: Reminder. It allow user to manage their reminders from database.
-
-Also I improved AddMyReminder to include additional reminder information.
+Author: Zhuoyuan Liu 
+* Set up a firestore database and connect the three collections with corresponding screens.
+* Added edit operations for all three collections to update user's new input.
+* Added delete operations for the dish gallery collection.
+* Fixed rendering bugs to improve the stability and responsiveness of the app.
