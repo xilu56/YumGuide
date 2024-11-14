@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: colors.lightGray,
   },
   label: {
     fontSize: 16,
@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
   dateText: {
     padding: 10,
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: colors.gray,
     borderRadius: 5,
     backgroundColor: '#fff',
     marginBottom: 15,

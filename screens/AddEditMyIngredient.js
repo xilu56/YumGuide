@@ -2,6 +2,9 @@ import React, { useState, useContext, useEffect } from 'react';
 import { View, Text, TextInput, Alert, StyleSheet } from 'react-native';
 import Button from '../Components/Button';
 import { IngredientContext } from '../Context/IngredientContext';
+import getColors from '../Helper/colors';
+
+const colors = getColors();
 
 export default function AddEditMyIngredient({ navigation, route }) {
   const { isEditing, ingredient } = route.params || {};
@@ -62,7 +65,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
-    backgroundColor: '#fff',
+    backgroundColor: colors.lightGray,
   },
   label: {
     marginVertical: 5,
@@ -71,7 +74,7 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 10,
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: colors.gray,
     borderRadius: 5,
   },
   buttonContainer: {

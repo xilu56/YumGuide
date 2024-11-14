@@ -11,7 +11,7 @@ import StoreLocationScreen from './screens/StoreLocationScreen';
 import ReminderScreen from './screens/ReminderScreen';
 import AddEditMyIngredient from './screens/AddEditMyIngredient';
 import AddMyDish from './screens/AddMyDish';
-import AddMyReminder from './screens/AddMyReminder';
+import AddEditMyReminder from './screens/AddEditMyReminder';
 
 import { IngredientProvider } from './Context/IngredientContext';
 import { ReminderProvider } from './Context/ReminderContext';
@@ -32,7 +32,7 @@ function MainTabs() {
             case 'Recipes': iconName = 'fast-food-outline'; break;
             case 'Ingredients': iconName = 'nutrition-outline'; break;
             case 'Dish Gallery': iconName = 'image-outline'; break;
-            case 'Store Location': iconName = 'cart-outline'; break;
+            case 'Store Locate': iconName = 'cart-outline'; break;
             case 'Reminder': iconName = 'notifications-outline'; break;
             default: iconName = 'help-circle-outline'; break;
           }
@@ -46,7 +46,7 @@ function MainTabs() {
       <Tab.Screen name="Recipes" component={RecipesScreen} />
       <Tab.Screen name="Ingredients" component={IngredientsScreen} />
       <Tab.Screen name="Dish Gallery" component={DishGalleryScreen} />
-      <Tab.Screen name="Store Location" component={StoreLocationScreen} />
+      <Tab.Screen name="Store Locate" component={StoreLocationScreen} />
       <Tab.Screen name="Reminder" component={ReminderScreen} />
     </Tab.Navigator>
   );
@@ -56,16 +56,14 @@ export default function App() {
   return (
     <IngredientProvider>
       <ReminderProvider>
-        <DishProvider>
-          <NavigationContainer>
-            <Stack.Navigator initialRouteName="Main">
-              <Stack.Screen name="Main" component={MainTabs} options={{ headerShown: false }} />
-              <Stack.Screen name="AddEditMyIngredient" component={AddEditMyIngredient} />
-              <Stack.Screen name="AddMyDish" component={AddMyDish} />
-              <Stack.Screen name="AddMyReminder" component={AddMyReminder} />
-            </Stack.Navigator>
-          </NavigationContainer>
-        </DishProvider>
+        <NavigationContainer>
+          <Stack.Navigator initialRouteName="Main">
+            <Stack.Screen name="Main" component={MainTabs} options={{ headerShown: false }} />
+            <Stack.Screen name="AddEditMyIngredient" component={AddEditMyIngredient} />
+            <Stack.Screen name="AddMyDish" component={AddMyDish} />
+            <Stack.Screen name="AddEditMyReminder" component={AddEditMyReminder} />
+          </Stack.Navigator>
+        </NavigationContainer>
       </ReminderProvider>
     </IngredientProvider>
   );

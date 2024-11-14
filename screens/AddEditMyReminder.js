@@ -3,8 +3,11 @@ import { View, Text, Alert, StyleSheet, TouchableWithoutFeedback, TextInput } fr
 import Button from '../Components/Button';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { ReminderContext } from '../Context/ReminderContext';
+import getColors from '../Helper/colors';
 
-export default function AddMyReminder({ navigation, route }) {
+const colors = getColors();
+
+export default function AddEditMyReminder({ navigation, route }) {
   const { isEditing, reminder } = route.params || {};
   const { addReminder, updateReminder } = useContext(ReminderContext);
 
@@ -113,20 +116,20 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: colors.lightGray,
   },
   label: {
     fontSize: 16,
     fontWeight: 'bold',
     marginVertical: 10,
-    color: '#333',
+    color: colors.darkGray,
   },
   input: {
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: colors.gray,
     borderRadius: 5,
     padding: 10,
-    backgroundColor: '#fff',
+    backgroundColor: colors.lightGray,
     marginBottom: 15,
   },
   buttonContainer: {
