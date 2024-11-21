@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -12,10 +12,13 @@ import ReminderScreen from './screens/ReminderScreen';
 import AddEditMyIngredient from './screens/AddEditMyIngredient';
 import AddMyDish from './screens/AddMyDish';
 import AddEditMyReminder from './screens/AddEditMyReminder';
+import LoginScreen from './screens/LoginScreen';
+import SignUpScreen from './screens/SignUpScreen';
 
 import { IngredientProvider } from './Context/IngredientContext';
 import { ReminderProvider } from './Context/ReminderContext';
-import { DishProvider } from './Context/DishContext'; // Import DishProvider
+import { DishProvider } from './Context/DishContext';
+import { AuthProvider, AuthContext } from './Context/AuthContext';
 import getColors from './Helper/colors';
 
 const colors = getColors();
@@ -52,21 +55,58 @@ function MainTabs() {
   );
 }
 
+function AppNavigator() {
+  const { user } = useContext(AuthContext);
+
+  return (
+    <Stack.Navigator>
+      {!user ? (
+        <>
+          <Stack.Screen
+            name="Login"
+            component={LoginScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="SignUp"
+            component={SignUpScreen}
+            options={{ headerShown: false }}
+          />
+        </>
+      ) : (
+        <>
+          <Stack.Screen
+            name="Main"
+            component={MainTabs}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="AddEditMyIngredient"
+            component={AddEditMyIngredient}
+          />
+          <Stack.Screen name="AddMyDish" component={AddMyDish} />
+          <Stack.Screen
+            name="AddEditMyReminder"
+            component={AddEditMyReminder}
+          />
+        </>
+      )}
+    </Stack.Navigator>
+  );
+}
+
 export default function App() {
   return (
-    <IngredientProvider>
-      <ReminderProvider>
-        <DishProvider>
-          <NavigationContainer>
-            <Stack.Navigator initialRouteName="Main">
-              <Stack.Screen name="Main" component={MainTabs} options={{ headerShown: false }} />
-              <Stack.Screen name="AddEditMyIngredient" component={AddEditMyIngredient} />
-              <Stack.Screen name="AddMyDish" component={AddMyDish} />
-              <Stack.Screen name="AddEditMyReminder" component={AddEditMyReminder} />
-            </Stack.Navigator>
-          </NavigationContainer>
-        </DishProvider>
-      </ReminderProvider>
-    </IngredientProvider>
+    <AuthProvider>
+      <IngredientProvider>
+        <ReminderProvider>
+          <DishProvider>
+            <NavigationContainer>
+              <AppNavigator />
+            </NavigationContainer>
+          </DishProvider>
+        </ReminderProvider>
+      </IngredientProvider>
+    </AuthProvider>
   );
 }
