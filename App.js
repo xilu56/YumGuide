@@ -14,6 +14,7 @@ import AddMyDish from './screens/AddMyDish';
 import AddEditMyReminder from './screens/AddEditMyReminder';
 import LoginScreen from './screens/LoginScreen';
 import SignUpScreen from './screens/SignUpScreen';
+import ProfileScreen from './screens/ProfileScreen'; // 新增
 
 import { IngredientProvider } from './Context/IngredientContext';
 import { ReminderProvider } from './Context/ReminderContext';
@@ -84,10 +85,17 @@ function AppNavigator() {
             name="AddEditMyIngredient"
             component={AddEditMyIngredient}
           />
-          <Stack.Screen name="AddMyDish" component={AddMyDish} />
+          <Stack.Screen
+            name="AddMyDish"
+            component={AddMyDish}
+          />
           <Stack.Screen
             name="AddEditMyReminder"
             component={AddEditMyReminder}
+          />
+          <Stack.Screen
+            name="ProfileScreen"
+            component={ProfileScreen}
           />
         </>
       )}
