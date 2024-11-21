@@ -7,7 +7,7 @@ import getColors from '../Helper/colors';
 const colors = getColors();
 
 const StoreLocationScreen = () => {
-  const { currentLocation, fetchNearbyPlaces, nearbyPlaces, permissionGranted } = useContext(LocationContext);
+  const { currentLocation, fetchNearbyPlaces, nearbyPlaces, permissionGranted, getUserLocation } = useContext(LocationContext);
   const [searchQuery, setSearchQuery] = useState('');
   const [mapRegion, setMapRegion] = useState(null);
   const [selectedLocation, setSelectedLocation] = useState(null);
@@ -62,6 +62,7 @@ const StoreLocationScreen = () => {
         />
         <Button title="Search" onPress={handleSearch} />
       </View>
+      <Button title="Refresh Location" onPress={getUserLocation} />
       {mapRegion && (
         <MapView
           style={styles.map}
