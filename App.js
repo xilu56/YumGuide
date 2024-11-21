@@ -14,13 +14,14 @@ import AddMyDish from './screens/AddMyDish';
 import AddEditMyReminder from './screens/AddEditMyReminder';
 import LoginScreen from './screens/LoginScreen';
 import SignUpScreen from './screens/SignUpScreen';
-import ProfileScreen from './screens/ProfileScreen'; // 新增
+import ProfileScreen from './screens/ProfileScreen';
 
 import { IngredientProvider } from './Context/IngredientContext';
 import { ReminderProvider } from './Context/ReminderContext';
 import { DishProvider } from './Context/DishContext';
 import { AuthProvider, AuthContext } from './Context/AuthContext';
 import { LocationProvider } from './Context/LocationContext';
+import { NotificationProvider } from './Context/NotificationContext'; // Import the NotificationProvider
 
 import getColors from './Helper/colors';
 
@@ -112,9 +113,11 @@ export default function App() {
         <ReminderProvider>
           <DishProvider>
             <LocationProvider>
-              <NavigationContainer>
-                <AppNavigator />
-              </NavigationContainer>
+              <NotificationProvider> {/* Wrap with NotificationProvider */}
+                <NavigationContainer>
+                  <AppNavigator />
+                </NavigationContainer>
+              </NotificationProvider>
             </LocationProvider>
           </DishProvider>
         </ReminderProvider>

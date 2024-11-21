@@ -1,14 +1,16 @@
 import React, { useContext, useLayoutEffect } from 'react';
-import { View, StyleSheet, Pressable } from 'react-native';
+import { View, StyleSheet, Pressable, Button } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import ItemsList from '../Components/ItemsList';
 import { ReminderContext } from '../Context/ReminderContext';
+import { NotificationContext } from '../Context/NotificationContext';
 import getColors from '../Helper/colors';
 
 const colors = getColors();
 
 export default function ReminderScreen({ navigation }) {
   const { reminders, deleteReminder } = useContext(ReminderContext);
+  const { scheduleNotification } = useContext(NotificationContext);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -36,6 +38,10 @@ export default function ReminderScreen({ navigation }) {
     deleteReminder(id);
   };
 
+  const handleScheduleNotification = () => {
+    scheduleNotification('Reminder', 'This is your scheduled notification!');
+  };
+
   return (
     <View style={styles.screen}>
       <ItemsList
@@ -43,6 +49,7 @@ export default function ReminderScreen({ navigation }) {
         onItemPress={handleItemPress}
         onDeletePress={handleDeletePress}
       />
+      <Button title="Schedule Notification" onPress={handleScheduleNotification} />
     </View>
   );
 }
