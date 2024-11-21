@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect } from 'react';
 import * as Notifications from 'expo-notifications';
+import * as Device from 'expo-device';
 
 export const NotificationContext = createContext();
 
@@ -7,51 +8,63 @@ export const NotificationProvider = ({ children }) => {
   const [notificationPermissionGranted, setNotificationPermissionGranted] = useState(false);
   const [expoPushToken, setExpoPushToken] = useState(null);
 
-  const verifyNotificationPermission = async () => {
-    try {
-      const { status } = await Notifications.getPermissionsAsync();
-      if (status !== 'granted') {
-        const { status: newStatus } = await Notifications.requestPermissionsAsync();
-        setNotificationPermissionGranted(newStatus === 'granted');
-      } else {
-        setNotificationPermissionGranted(true);
+  const registerForPushNotificationsAsync = async () => {
+    let token;
+    if (Device.isDevice) {
+      try {
+        const { status: existingStatus } = await Notifications.getPermissionsAsync();
+        let finalStatus = existingStatus;
+        if (existingStatus !== 'granted') {
+          const { status } = await Notifications.requestPermissionsAsync();
+          finalStatus = status;
+        }
+        setNotificationPermissionGranted(finalStatus === 'granted');
+        if (finalStatus === 'granted') {
+          token = (await Notifications.getExpoPushTokenAsync()).data;
+          setExpoPushToken(token);
+        } else {
+          alert('Push notifications are disabled. Please enable them in settings.');
+        }
+      } catch (error) {
+        console.error('Error registering for push notifications:', error);
       }
-    } catch (error) {
-      console.error('Error checking notification permission:', error);
+    } else {
+      alert('Must use physical device for Push Notifications');
     }
+    return token;
   };
 
-  const getPushToken = async () => {
+  const scheduleNotification = async (title = 'Default Title', body = 'Default Body', data = {}) => {
     try {
-      const token = (await Notifications.getExpoPushTokenAsync()).data;
-      setExpoPushToken(token);
-    } catch (error) {
-      console.error('Error fetching push token:', error);
-    }
-  };
-
-  useEffect(() => {
-    verifyNotificationPermission();
-    getPushToken();
-  }, []);
-
-  const scheduleNotification = async (title, body, data = {}) => {
-    try {
+      if (!title || typeof title !== 'string') {
+        throw new Error('Invalid notification title: Title must be a non-empty string.');
+      }
+      if (!body || typeof body !== 'string') {
+        throw new Error('Invalid notification body: Body must be a non-empty string.');
+      }
+  
       await Notifications.scheduleNotificationAsync({
         content: {
           title,
           body,
           data,
         },
-        trigger: { seconds: 5 }, // Schedule after 5 seconds for demonstration
+        trigger: { seconds: 2 },
       });
+  
+      console.log('Notification scheduled successfully:', { title, body, data });
     } catch (error) {
-      console.error('Error scheduling notification:', error);
+      console.error('Error scheduling notification:', error.message);
     }
   };
+  
+
+  useEffect(() => {
+    registerForPushNotificationsAsync();
+  }, []);
 
   return (
-    <NotificationContext.Provider value={{ notificationPermissionGranted, expoPushToken, scheduleNotification }}>
+    <NotificationContext.Provider value={{ scheduleNotification, expoPushToken, notificationPermissionGranted }}>
       {children}
     </NotificationContext.Provider>
   );
