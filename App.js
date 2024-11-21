@@ -20,6 +20,8 @@ import { IngredientProvider } from './Context/IngredientContext';
 import { ReminderProvider } from './Context/ReminderContext';
 import { DishProvider } from './Context/DishContext';
 import { AuthProvider, AuthContext } from './Context/AuthContext';
+import { LocationProvider } from './Context/LocationContext';
+
 import getColors from './Helper/colors';
 
 const colors = getColors();
@@ -109,9 +111,11 @@ export default function App() {
       <IngredientProvider>
         <ReminderProvider>
           <DishProvider>
-            <NavigationContainer>
-              <AppNavigator />
-            </NavigationContainer>
+            <LocationProvider>
+              <NavigationContainer>
+                <AppNavigator />
+              </NavigationContainer>
+            </LocationProvider>
           </DishProvider>
         </ReminderProvider>
       </IngredientProvider>
