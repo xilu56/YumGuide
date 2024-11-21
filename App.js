@@ -113,7 +113,7 @@ export default function App() {
         <ReminderProvider>
           <DishProvider>
             <LocationProvider>
-              <NotificationProvider> {/* Wrap with NotificationProvider */}
+              <NotificationProvider>
                 <NavigationContainer>
                   <AppNavigator />
                 </NavigationContainer>

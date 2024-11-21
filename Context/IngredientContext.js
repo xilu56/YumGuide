@@ -10,7 +10,7 @@ export const IngredientProvider = ({ children }) => {
   const { user } = useContext(AuthContext);
 
   // Fetch ingredients from Firestore
-  const getIngredients = async () => {
+  const fetchIngredients = async () => {
     if (!user) return; // Ensure user is logged in
     try {
       const q = query(collection(database, "MyIngredients"), where("userId", "==", user.uid));
@@ -25,7 +25,7 @@ export const IngredientProvider = ({ children }) => {
     }
   };
 
-  // Add ingredient to Firestore and update local state
+  // Add an ingredient to Firestore and update local state
   const addIngredient = async (ingredient) => {
     if (!user) return; // Ensure user is logged in
     try {
@@ -39,14 +39,37 @@ export const IngredientProvider = ({ children }) => {
     }
   };
 
-  // Remaining functions unchanged...
+  // Update an ingredient in Firestore and local state
+  const updateIngredient = async (id, updatedIngredient) => {
+    try {
+      const ingredientRef = doc(database, "MyIngredients", id);
+      await updateDoc(ingredientRef, updatedIngredient);
+      setIngredients(ingredients.map(ingredient =>
+        ingredient.id === id ? { ...ingredient, ...updatedIngredient } : ingredient
+      ));
+    } catch (err) {
+      console.error("Error updating ingredient:", err);
+    }
+  };
 
+  // Delete an ingredient from Firestore and local state
+  const deleteIngredient = async (id) => {
+    try {
+      const ingredientRef = doc(database, "MyIngredients", id);
+      await deleteDoc(ingredientRef);
+      setIngredients(ingredients.filter(ingredient => ingredient.id !== id));
+    } catch (err) {
+      console.error("Error deleting ingredient:", err);
+    }
+  };
+
+  // Effect to fetch ingredients whenever the user changes
   useEffect(() => {
-    getIngredients();
-  }, [user]); // Reload when user changes
+    fetchIngredients();
+  }, [user]);
 
   return (
-    <IngredientContext.Provider value={{ ingredients, addIngredient }}>
+    <IngredientContext.Provider value={{ ingredients, addIngredient, updateIngredient, deleteIngredient }}>
       {children}
     </IngredientContext.Provider>
   );

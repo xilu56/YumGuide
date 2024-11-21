@@ -82,11 +82,12 @@ export default function AddEditMyReminder({ navigation, route }) {
       )}
 
       <Text style={styles.label}>Select Time *</Text>
-      <TouchableWithoutFeedback onPress={() => setShowTimePicker(true)}>
+      <TouchableWithoutFeedback onPress={() => setShowDatePicker(true)}>
         <View style={styles.input}>
-          <Text>{reminderTime}</Text>
+          <Text>{reminderDate.toDateString()}</Text>
         </View>
       </TouchableWithoutFeedback>
+
 
       {showTimePicker && (
         <DateTimePicker

@@ -37,14 +37,34 @@ export const ReminderProvider = ({ children }) => {
     }
   };
 
-  // Remaining functions unchanged...
+  const updateReminder = async (id, updatedReminder) => {
+    try {
+      const reminderRef = doc(database, "Reminders", id);
+      await updateDoc(reminderRef, updatedReminder);
+      setReminders(reminders.map(reminder =>
+        reminder.id === id ? { ...reminder, ...updatedReminder } : reminder
+      ));
+    } catch (err) {
+      console.error("Error updating reminder:", err);
+    }
+  };
+
+  const deleteReminder = async (id) => {
+    try {
+      const reminderRef = doc(database, "Reminders", id);
+      await deleteDoc(reminderRef);
+      setReminders(reminders.filter(reminder => reminder.id !== id));
+    } catch (err) {
+      console.error("Error deleting reminder:", err);
+    }
+  };
 
   useEffect(() => {
     fetchReminders();
   }, [user]);
 
   return (
-    <ReminderContext.Provider value={{ reminders, addReminder }}>
+    <ReminderContext.Provider value={{ reminders, addReminder, updateReminder, deleteReminder }}>
       {children}
     </ReminderContext.Provider>
   );

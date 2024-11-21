@@ -1,5 +1,5 @@
 import React, { useContext, useLayoutEffect } from 'react';
-import { View, StyleSheet, Pressable, Button } from 'react-native';
+import { View, StyleSheet, Pressable, Text } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import ItemsList from '../Components/ItemsList';
 import { ReminderContext } from '../Context/ReminderContext';
@@ -39,8 +39,16 @@ export default function ReminderScreen({ navigation }) {
   };
 
   const handleScheduleNotification = () => {
-    scheduleNotification('Reminder', 'This is your scheduled notification!');
-  };
+    scheduleNotification({
+      title: 'Reminder',
+      message: 'This is a reminder notification',
+      trigger: {
+        channelId: 'reminder',
+        repeats: true,
+        seconds: 10,
+      },
+  });
+  }
 
   return (
     <View style={styles.screen}>
@@ -49,7 +57,9 @@ export default function ReminderScreen({ navigation }) {
         onItemPress={handleItemPress}
         onDeletePress={handleDeletePress}
       />
-      <Button title="Schedule Notification" onPress={handleScheduleNotification} />
+      <Pressable onPress={handleScheduleNotification} style={styles.button}>
+        <Text style={styles.buttonText}>Schedule Notification</Text>
+      </Pressable>
     </View>
   );
 }
@@ -59,5 +69,17 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
     backgroundColor: colors.background,
+  },
+  button: {
+    marginTop: 20,
+    padding: 15,
+    backgroundColor: colors.accent,
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: colors.white,
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
