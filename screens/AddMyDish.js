@@ -1,13 +1,16 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { View, Text, Button, StyleSheet, Alert, TouchableOpacity } from 'react-native';
+import { View, Text, Button, StyleSheet, Alert, TouchableOpacity, Image } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import * as ImagePicker from 'expo-image-picker';
 import { DishContext } from '../Context/DishContext';
+import { addDishWithPhoto } from '../Firebase/firestoreHelper';
 
 export default function AddMyDish({ navigation, route }) {
   const { isEditing, dish } = route.params || {};
-  const { addDish, updateDish } = useContext(DishContext);
+  const { addDish } = useContext(DishContext);
 
   const [photoDate, setPhotoDate] = useState(isEditing && dish ? new Date(dish.date) : new Date());
+  const [photoUri, setPhotoUri] = useState(isEditing && dish ? dish.photoUrl : null); // Photo URI state
   const [showDatePicker, setShowDatePicker] = useState(false);
 
   useEffect(() => {
@@ -16,31 +19,55 @@ export default function AddMyDish({ navigation, route }) {
     });
   }, [isEditing, navigation]);
 
-  const handleSave = async () => {
-    const newDishData = { date: photoDate.toDateString() };
-
-    if (isEditing) {
-      updateDish(dish.id, newDishData);
-      Alert.alert('Success', 'Dish updated successfully!');
-    } else {
-      await addDish(newDishData);
-      Alert.alert('Success', 'Dish added successfully!');
+  const handleTakePhoto = async () => {
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert("Permission Denied", "Camera access is required to take a photo.");
+      return;
     }
 
-    navigation.goBack();
+    const result = await ImagePicker.launchCameraAsync({ allowsEditing: true, quality: 0.7 });
+    if (!result.canceled) {
+      setPhotoUri(result.assets[0].uri); // Save the photo URI
+    }
+  };
+
+  const handleSave = async () => {
+    if (!photoUri) {
+      Alert.alert("Error", "Please take a photo before saving.");
+      return;
+    }
+
+    const dishData = {
+      date: photoDate.toDateString(),
+      userId: "your-user-id", // Replace this with actual user ID from AuthContext
+    };
+
+    try {
+      const newDish = await addDishWithPhoto(photoUri, dishData);
+      addDish(newDish); // Update local context
+      Alert.alert('Success', 'Dish added successfully!');
+      navigation.goBack();
+    } catch (error) {
+      Alert.alert("Error", error.message);
+    }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.infoText}>Please take a photo of your dish</Text>
-      
-      <TouchableOpacity style={styles.photoButton}>
-        <Text style={styles.photoButtonText}>Take a Photo</Text>
-      </TouchableOpacity>
+      <Text style={styles.infoText}>Take a photo of your dish</Text>
+
+      {photoUri ? (
+        <Image source={{ uri: photoUri }} style={styles.photoPreview} />
+      ) : (
+        <TouchableOpacity style={styles.photoButton} onPress={handleTakePhoto}>
+          <Text style={styles.photoButtonText}>Take a Photo</Text>
+        </TouchableOpacity>
+      )}
 
       <Text style={styles.label}>Select Date *</Text>
       <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.datePicker}>
-      <Text>{photoDate.toDateString()}</Text>
+        <Text>{photoDate.toDateString()}</Text>
       </TouchableOpacity>
       {showDatePicker && (
         <DateTimePicker
@@ -49,9 +76,7 @@ export default function AddMyDish({ navigation, route }) {
           display="default"
           onChange={(event, selectedDate) => {
             setShowDatePicker(false);
-            if (selectedDate) {
-              setPhotoDate(selectedDate);
-            }
+            if (selectedDate) setPhotoDate(selectedDate);
           }}
         />
       )}
@@ -87,6 +112,12 @@ const styles = StyleSheet.create({
   },
   photoButtonText: {
     fontSize: 16,
+  },
+  photoPreview: {
+    width: '100%',
+    height: 200,
+    marginBottom: 15,
+    borderRadius: 10,
   },
   label: {
     fontSize: 16,

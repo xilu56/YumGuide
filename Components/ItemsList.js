@@ -6,7 +6,7 @@ import getColors from '../Helper/colors';
 
 const colors = getColors();
 
-export default function ItemsList({ items, onItemPress, onDeletePress }) {
+export default function ItemsList({ items, onItemPress, onDeletePress, itemType }) {
   const formattedItems = items.map(item => ({
     ...item,
     date: item.date instanceof Date
@@ -24,7 +24,7 @@ export default function ItemsList({ items, onItemPress, onDeletePress }) {
         renderItem={({ item }) => (
           <View style={styles.itemContainer}>
             <Pressable onPress={() => onItemPress(item)} style={{ flex: 1 }}>
-              <Item item={item} />
+              <Item item={item} type={itemType} />
             </Pressable>
             <Pressable onPress={() => onDeletePress(item.id)} style={styles.deleteButton}>
               <Ionicons name="trash" size={24} color={colors.red} />

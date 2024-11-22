@@ -40,8 +40,9 @@ export default function IngredientsScreen({ navigation }) {
     <View style={styles.screen}>
       <ItemsList
         items={ingredients}
+        itemType="ingredients"
         onItemPress={handleItemPress}
-        onDeletePress={handleDeletePress} // Pass the delete function to ItemsList
+        onDeletePress={handleDeletePress}
       />
     </View>
   );
