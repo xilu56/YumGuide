@@ -1,4 +1,4 @@
-import React, { createContext } from "react";
+import React, { createContext, useEffect } from "react";
 import { Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Notifications from "expo-notifications";
@@ -6,6 +6,47 @@ import * as Notifications from "expo-notifications";
 export const NotificationContext = createContext();
 
 export const NotificationProvider = ({ children }) => {
+  const checkNotifications = async () => {
+    try {
+      const now = new Date();
+  
+      const storedNotifications = await AsyncStorage.getItem("notifications");
+      const notifications = JSON.parse(storedNotifications) || [];
+
+      const dueNotifications = notifications.filter(
+        (notification) => new Date(notification.time) <= now
+      );
+  
+      for (const notification of dueNotifications) {
+        await Notifications.scheduleNotificationAsync({
+          content: {
+            title: notification.title,
+            body: notification.body,
+          },
+          trigger: null,
+        });
+      }
+  
+      const remainingNotifications = notifications.filter(
+        (notification) => new Date(notification.time) > now
+      );
+      console.log("Remaining Notifications:", remainingNotifications);
+  
+      await AsyncStorage.setItem(
+        "notifications",
+        JSON.stringify(remainingNotifications)
+      );
+    } catch (err) {
+      console.error("Error checking notifications:", err);
+    }
+  };
+  
+
+  useEffect(() => {
+    const interval = setInterval(checkNotifications, 60000); 
+    return () => clearInterval(interval); 
+  }, []);
+
   const scheduleNotificationHandler = async (title, body, scheduledDateTime) => {
     try {
       const hasPermission = await Notifications.getPermissionsAsync();
@@ -20,6 +61,7 @@ export const NotificationProvider = ({ children }) => {
         return;
       }
 
+      // 存储通知
       const storedNotifications = await AsyncStorage.getItem("notifications");
       const notifications = JSON.parse(storedNotifications) || [];
       notifications.push({

@@ -42,7 +42,6 @@ export default function ReminderScreen({ navigation }) {
     <View style={styles.screen}>
       <ItemsList
         items={reminders}
-        itemType="reminder"
         onItemPress={handleItemPress}
         onDeletePress={handleDeletePress}
       />
