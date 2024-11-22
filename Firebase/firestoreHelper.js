@@ -48,36 +48,33 @@ import { Asset } from 'expo-asset';
   }
   
   // Gallery CRUD with Firebase Storage integration
-  export async function addPhoto(fileName, photoData) {
+  export async function addDishWithPhoto(photoUri, dishData) {
     try {
-      const fileMap = {
-        'test.png': require('../assets/test.png'),
-      };
+      // Generate a unique filename for the photo
+      const fileName = `${Date.now()}_${dishData.userId}.jpg`;
+      const storageRef = ref(storage, `dishes/${fileName}`);
   
-      if (!fileMap[fileName]) throw new Error('File not found in assets.');
-  
-      const asset = Asset.fromModule(fileMap[fileName]);
-      await asset.downloadAsync();
-      const fileUri = asset.localUri;
-  
-      const storageRef = ref(storage, `gallery/${fileName}`);
-      const response = await fetch(fileUri);
+      // Convert local photo URI to Blob
+      const response = await fetch(photoUri);
       const blob = await response.blob();
+  
+      // Upload photo to Firebase Storage
       await uploadBytes(storageRef, blob);
   
-      const url = await getDownloadURL(storageRef);
+      // Get the downloadable URL for the uploaded photo
+      const photoUrl = await getDownloadURL(storageRef);
   
-      const docRef = await addDoc(collection(database, 'Gallery'), {
-        ...photoData,
-        url,
-        filename: fileName,
+      // Add the dish data to Firestore, including the photo URL
+      const docRef = await addDoc(collection(database, "MyDishes"), {
+        ...dishData,
+        photoUrl, // Save the photo URL in Firestore
       });
   
-      console.log('Photo added:', docRef.id);
-      return docRef.id;
-    } catch (err) {
-      console.error('Error adding photo:', err);
-      throw new Error('Failed to upload photo.');
+      // Return the full dish data with the generated Firestore ID
+      return { id: docRef.id, ...dishData, photoUrl };
+    } catch (error) {
+      console.error("Error adding dish with photo:", error);
+      throw new Error("Failed to upload photo or add dish data.");
     }
   }
   

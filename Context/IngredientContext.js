@@ -46,7 +46,7 @@ export const IngredientProvider = ({ children }) => {
   }, [user]); // Reload when user changes
 
   return (
-    <IngredientContext.Provider value={{ ingredients, addIngredient }}>
+    <IngredientContext.Provider value={{ ingredients, addIngredient, deleteIngredient }}>
       {children}
     </IngredientContext.Provider>
   );
