@@ -1,50 +1,71 @@
-import React, { useState, useContext, useEffect } from 'react';
-import { View, Text, Alert, StyleSheet, TouchableWithoutFeedback, TextInput } from 'react-native';
-import Button from '../Components/Button';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import { ReminderContext } from '../Context/ReminderContext';
-import getColors from '../Helper/colors';
+import React, { useState, useContext, useEffect } from "react";
+import {
+  View,
+  Text,
+  Alert,
+  StyleSheet,
+  TouchableWithoutFeedback,
+  TextInput,
+} from "react-native";
+import Button from "../Components/Button";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { ReminderContext } from "../Context/ReminderContext";
+import { NotificationContext } from "../Context/NotificationContext";
+import getColors from "../Helper/colors";
 
 const colors = getColors();
 
 export default function AddEditMyReminder({ navigation, route }) {
   const { isEditing, reminder } = route.params || {};
   const { addReminder, updateReminder } = useContext(ReminderContext);
+  const { scheduleNotification } = useContext(NotificationContext);
 
   const initialDate = isEditing && reminder.date ? new Date(reminder.date) : new Date();
   const initialTime = isEditing && reminder.time ? reminder.time : "12:00";
 
   const [reminderDate, setReminderDate] = useState(initialDate);
   const [reminderTime, setReminderTime] = useState(initialTime);
-  const [description, setDescription] = useState(isEditing ? reminder.description : '');
+  const [description, setDescription] = useState(isEditing ? reminder.description : "");
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
 
   useEffect(() => {
     navigation.setOptions({
-      title: isEditing ? 'Edit Reminder' : 'Add Reminder',
+      title: isEditing ? "Edit Reminder" : "Add Reminder",
     });
   }, [isEditing, navigation]);
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!description.trim()) {
-      Alert.alert('Error', 'Please enter a description.');
+      Alert.alert("Error", "Please enter a description.");
       return;
     }
 
     const newReminder = {
       title: "Reminder",
-      date: reminderDate.toISOString().split('T')[0],
+      date: reminderDate.toISOString().split("T")[0],
       time: reminderTime,
       description: description.trim(),
     };
 
+    const notificationTime = new Date(`${newReminder.date}T${newReminder.time}:00`);
+    if (notificationTime <= new Date()) {
+      Alert.alert("Error", "Reminder time must be in the future.");
+      return;
+    }
+
     if (isEditing) {
       updateReminder(reminder.id, newReminder);
-      Alert.alert('Success', 'Reminder updated successfully!');
+      Alert.alert("Success", "Reminder updated successfully!");
     } else {
       addReminder(newReminder);
-      Alert.alert('Success', 'Reminder saved successfully!');
+      Alert.alert("Success", "Reminder saved successfully!");
+    }
+
+    try {
+      await scheduleNotification("Reminder Alert", description.trim(), notificationTime);
+    } catch (err) {
+      console.error("Error scheduling notification:", err);
     }
 
     navigation.goBack();
@@ -90,14 +111,16 @@ export default function AddEditMyReminder({ navigation, route }) {
 
       {showTimePicker && (
         <DateTimePicker
-          value={new Date(`${reminderDate.toISOString().split('T')[0]}T${reminderTime}:00`)}
+          value={new Date(
+            `${reminderDate.toISOString().split("T")[0]}T${reminderTime}:00`
+          )}
           mode="time"
           display="default"
           onChange={(event, selectedTime) => {
             setShowTimePicker(false);
             if (selectedTime) {
-              const hours = selectedTime.getHours().toString().padStart(2, '0');
-              const minutes = selectedTime.getMinutes().toString().padStart(2, '0');
+              const hours = selectedTime.getHours().toString().padStart(2, "0");
+              const minutes = selectedTime.getMinutes().toString().padStart(2, "0");
               setReminderTime(`${hours}:${minutes}`);
             }
           }}
@@ -120,7 +143,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginVertical: 10,
     color: colors.darkGray,
   },
@@ -133,8 +156,8 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginTop: 20,
   },
 });

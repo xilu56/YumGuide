@@ -1,70 +1,61 @@
-import React, { createContext, useState, useEffect } from 'react';
-import * as Notifications from 'expo-notifications';
-import * as Device from 'expo-device';
+import React, { createContext } from "react";
+import { Alert } from "react-native";
+import * as Notifications from "expo-notifications";
 
 export const NotificationContext = createContext();
 
 export const NotificationProvider = ({ children }) => {
-  const [notificationPermissionGranted, setNotificationPermissionGranted] = useState(false);
-  const [expoPushToken, setExpoPushToken] = useState(null);
-
-  const registerForPushNotificationsAsync = async () => {
-    let token;
-    if (Device.isDevice) {
-      try {
-        const { status: existingStatus } = await Notifications.getPermissionsAsync();
-        let finalStatus = existingStatus;
-        if (existingStatus !== 'granted') {
-          const { status } = await Notifications.requestPermissionsAsync();
-          finalStatus = status;
-        }
-        setNotificationPermissionGranted(finalStatus === 'granted');
-        if (finalStatus === 'granted') {
-          token = (await Notifications.getExpoPushTokenAsync()).data;
-          setExpoPushToken(token);
-        } else {
-          alert('Push notifications are disabled. Please enable them in settings.');
-        }
-      } catch (error) {
-        console.error('Error registering for push notifications:', error);
-      }
-    } else {
-      alert('Must use physical device for Push Notifications');
-    }
-    return token;
-  };
-
-  const scheduleNotification = async (title = 'Default Title', body = 'Default Body', data = {}) => {
+  // Verify and request permissions
+  async function verifyPermission() {
     try {
-      if (!title || typeof title !== 'string') {
-        throw new Error('Invalid notification title: Title must be a non-empty string.');
+      const permissionResponse = await Notifications.getPermissionsAsync();
+      if (permissionResponse.granted) {
+        return true;
       }
-      if (!body || typeof body !== 'string') {
-        throw new Error('Invalid notification body: Body must be a non-empty string.');
-      }
-  
-      await Notifications.scheduleNotificationAsync({
-        content: {
-          title,
-          body,
-          data,
-        },
-        trigger: { seconds: 2 },
-      });
-  
-      console.log('Notification scheduled successfully:', { title, body, data });
-    } catch (error) {
-      console.error('Error scheduling notification:', error.message);
+      const requestedPermission = await Notifications.requestPermissionsAsync();
+      return requestedPermission.granted;
+    } catch (err) {
+      console.error("Error verifying permission:", err);
     }
-  };
-  
+  }
 
-  useEffect(() => {
-    registerForPushNotificationsAsync();
-  }, []);
+  // Schedule notification
+  async function scheduleNotificationHandler(title, body, scheduledDateTime) {
+    try {
+      const hasPermission = await verifyPermission();
+      if (!hasPermission) {
+        Alert.alert("You need to give permission for notifications");
+        return;
+      }
+
+      if (!(scheduledDateTime instanceof Date) || isNaN(scheduledDateTime.getTime())) {
+        console.error("Invalid scheduledDateTime provided:", scheduledDateTime);
+        return;
+      }
+
+      const now = new Date();
+      if (scheduledDateTime <= now) {
+        Alert.alert("Error", "Notification time must be in the future.");
+        return;
+      }
+
+      const notificationId = await Notifications.scheduleNotificationAsync({
+        content: {
+          title: title,
+          body: body,
+        },
+        trigger: {
+          date: scheduledDateTime,
+        },
+      });
+      console.log(`Notification scheduled for ${scheduledDateTime}, ID: ${notificationId}`);
+    } catch (err) {
+      console.error("Error scheduling notification:", err);
+    }
+  }
 
   return (
-    <NotificationContext.Provider value={{ scheduleNotification, expoPushToken, notificationPermissionGranted }}>
+    <NotificationContext.Provider value={{ scheduleNotification: scheduleNotificationHandler }}>
       {children}
     </NotificationContext.Provider>
   );

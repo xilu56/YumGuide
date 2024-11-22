@@ -38,18 +38,6 @@ export default function ReminderScreen({ navigation }) {
     deleteReminder(id);
   };
 
-  const handleScheduleNotification = () => {
-    scheduleNotification({
-      title: 'Reminder',
-      message: 'This is a reminder notification',
-      trigger: {
-        channelId: 'reminder',
-        repeats: true,
-        seconds: 10,
-      },
-  });
-  }
-
   return (
     <View style={styles.screen}>
       <ItemsList
@@ -57,9 +45,6 @@ export default function ReminderScreen({ navigation }) {
         onItemPress={handleItemPress}
         onDeletePress={handleDeletePress}
       />
-      <Pressable onPress={handleScheduleNotification} style={styles.button}>
-        <Text style={styles.buttonText}>Schedule Notification</Text>
-      </Pressable>
     </View>
   );
 }
