@@ -36,15 +36,35 @@ export const DishProvider = ({ children }) => {
       console.error("Error adding dish:", err);
     }
   };
+  
+  const updateDish = async (id, updatedDish) => {
+    try {
+      const dishRef = doc(database, "MyDishes", id);
+      await updateDoc(dishRef, updatedDish);
+      setDishes(dishes.map(dish =>
+        dish.id === id ? { ...dish, ...updatedDish } : dish
+      ));
+    } catch (err) {
+      console.error("Error updating dish:", err);
+    }
+  };
 
-  // Remaining functions unchanged...
+  const deleteDish = async (id) => {
+    try {
+      const dishRef = doc(database, "MyDishes", id);
+      await deleteDoc(dishRef);
+      setDishes(dishes.filter(dish => dish.id !== id));
+    } catch (err) {
+      console.error("Error deleting dish:", err);
+    }
+  };
 
   useEffect(() => {
     getDishes();
   }, [user]);
 
   return (
-    <DishContext.Provider value={{ dishes, addDish }}>
+    <DishContext.Provider value={{ dishes, addDish, updateDish, deleteDish }}>
       {children}
     </DishContext.Provider>
   );

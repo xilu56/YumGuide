@@ -23,6 +23,14 @@ import { AuthProvider, AuthContext } from './Context/AuthContext';
 import { LocationProvider } from './Context/LocationContext';
 import { NotificationProvider } from './Context/NotificationContext'; // Import the NotificationProvider
 
+import * as Notifications from "expo-notifications";
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => {
+    return { shouldShowAlert: true };
+  },
+});
+
 import getColors from './Helper/colors';
 
 const colors = getColors();
@@ -113,7 +121,7 @@ export default function App() {
         <ReminderProvider>
           <DishProvider>
             <LocationProvider>
-              <NotificationProvider> {/* Wrap with NotificationProvider */}
+              <NotificationProvider>
                 <NavigationContainer>
                   <AppNavigator />
                 </NavigationContainer>

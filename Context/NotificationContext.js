@@ -1,57 +1,41 @@
-import React, { createContext, useState, useEffect } from 'react';
-import * as Notifications from 'expo-notifications';
+import React, { createContext } from "react";
+import { Alert } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as Notifications from "expo-notifications";
 
 export const NotificationContext = createContext();
 
 export const NotificationProvider = ({ children }) => {
-  const [notificationPermissionGranted, setNotificationPermissionGranted] = useState(false);
-  const [expoPushToken, setExpoPushToken] = useState(null);
-
-  const verifyNotificationPermission = async () => {
+  const scheduleNotificationHandler = async (title, body, scheduledDateTime) => {
     try {
-      const { status } = await Notifications.getPermissionsAsync();
-      if (status !== 'granted') {
-        const { status: newStatus } = await Notifications.requestPermissionsAsync();
-        setNotificationPermissionGranted(newStatus === 'granted');
-      } else {
-        setNotificationPermissionGranted(true);
+      const hasPermission = await Notifications.getPermissionsAsync();
+      if (!hasPermission.granted) {
+        Alert.alert("Permission Required", "You need to grant notification permissions.");
+        return;
       }
-    } catch (error) {
-      console.error('Error checking notification permission:', error);
-    }
-  };
 
-  const getPushToken = async () => {
-    try {
-      const token = (await Notifications.getExpoPushTokenAsync()).data;
-      setExpoPushToken(token);
-    } catch (error) {
-      console.error('Error fetching push token:', error);
-    }
-  };
+      const now = new Date();
+      if (scheduledDateTime <= now) {
+        Alert.alert("Invalid Time", "Notification time must be in the future.");
+        return;
+      }
 
-  useEffect(() => {
-    verifyNotificationPermission();
-    getPushToken();
-  }, []);
-
-  const scheduleNotification = async (title, body, data = {}) => {
-    try {
-      await Notifications.scheduleNotificationAsync({
-        content: {
-          title,
-          body,
-          data,
-        },
-        trigger: { seconds: 5 }, // Schedule after 5 seconds for demonstration
+      const storedNotifications = await AsyncStorage.getItem("notifications");
+      const notifications = JSON.parse(storedNotifications) || [];
+      notifications.push({
+        title,
+        body,
+        time: scheduledDateTime.toISOString(),
       });
-    } catch (error) {
-      console.error('Error scheduling notification:', error);
+      await AsyncStorage.setItem("notifications", JSON.stringify(notifications));
+      console.log(`Notification scheduled locally for: ${scheduledDateTime}`);
+    } catch (err) {
+      console.error("Error scheduling notification:", err);
     }
   };
 
   return (
-    <NotificationContext.Provider value={{ notificationPermissionGranted, expoPushToken, scheduleNotification }}>
+    <NotificationContext.Provider value={{ scheduleNotification: scheduleNotificationHandler }}>
       {children}
     </NotificationContext.Provider>
   );
