@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useLayoutEffect } from 'react';
 import { View, Text, TextInput, Image, FlatList, StyleSheet, Pressable, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
@@ -9,6 +9,24 @@ const colors = getColors();
 
 const RecipesScreen = ({ navigation }) => {
   const { user } = useContext(AuthContext);
+  
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerStyle: { backgroundColor: colors.primary },
+      headerTintColor: colors.white,
+      headerRight: () => (
+        <View style={styles.headerRightContainer}>
+          <Pressable
+            onPress={() => navigation.navigate('ProfileScreen')}
+            style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }]}
+          >
+            <Ionicons name="person-circle-outline" size={28} color={colors.white} />
+          </Pressable>
+        </View>
+      ),
+    });
+  }, [navigation]);
+
   const [searchTerm, setSearchTerm] = useState('');
   const [recommendedRecipe, setRecommendedRecipe] = useState(null);
   const [missingIngredients, setMissingIngredients] = useState([]);
