@@ -20,7 +20,6 @@ export default function ProfileScreen({ navigation }) {
     <View style={styles.container}>
       <Text style={styles.label}>Logged in as:</Text>
       <Text style={styles.info}>{user?.email || 'Unknown User'}</Text>
-      {/* Display Firebase user ID */}
       <Text style={styles.label}>User ID:</Text>
       <Text style={styles.info}>{user?.uid || 'No User ID'}</Text>
       <Button title="Logout" onPress={handleLogout} />
