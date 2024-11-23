@@ -4,6 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 
+// Screen Imports
 import RecipesScreen from './screens/RecipesScreen';
 import IngredientsScreen from './screens/IngredientsScreen';
 import DishGalleryScreen from './screens/DishGalleryScreen';
@@ -16,27 +17,31 @@ import LoginScreen from './screens/LoginScreen';
 import SignUpScreen from './screens/SignUpScreen';
 import ProfileScreen from './screens/ProfileScreen';
 
+// Context Providers
 import { IngredientProvider } from './Context/IngredientContext';
 import { ReminderProvider } from './Context/ReminderContext';
 import { DishProvider } from './Context/DishContext';
 import { AuthProvider, AuthContext } from './Context/AuthContext';
 import { LocationProvider } from './Context/LocationContext';
-import { NotificationProvider } from './Context/NotificationContext'; // Import the NotificationProvider
+import { NotificationProvider } from './Context/NotificationContext';
 
+// Notification Setup
 import * as Notifications from "expo-notifications";
-
 Notifications.setNotificationHandler({
   handleNotification: async () => {
     return { shouldShowAlert: true };
   },
 });
 
+// Helper Functions
 import getColors from './Helper/colors';
-
 const colors = getColors();
+
+// Navigators
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
+// Tab Navigator (Main Tabs)
 function MainTabs() {
   return (
     <Tab.Navigator
@@ -44,12 +49,24 @@ function MainTabs() {
         tabBarIcon: ({ color, size }) => {
           let iconName;
           switch (route.name) {
-            case 'Recipes': iconName = 'fast-food-outline'; break;
-            case 'Ingredients': iconName = 'nutrition-outline'; break;
-            case 'Dish Gallery': iconName = 'image-outline'; break;
-            case 'Store Locate': iconName = 'cart-outline'; break;
-            case 'Reminder': iconName = 'notifications-outline'; break;
-            default: iconName = 'help-circle-outline'; break;
+            case 'Recipes':
+              iconName = 'fast-food-outline';
+              break;
+            case 'Ingredients':
+              iconName = 'nutrition-outline';
+              break;
+            case 'Dish Gallery':
+              iconName = 'image-outline';
+              break;
+            case 'Store Locate':
+              iconName = 'cart-outline';
+              break;
+            case 'Reminder':
+              iconName = 'notifications-outline';
+              break;
+            default:
+              iconName = 'help-circle-outline';
+              break;
           }
           return <Ionicons name={iconName} size={size} color={color} />;
         },
@@ -67,6 +84,7 @@ function MainTabs() {
   );
 }
 
+// Stack Navigator (Authentication and Main Flow)
 function AppNavigator() {
   const { user } = useContext(AuthContext);
 
@@ -95,18 +113,22 @@ function AppNavigator() {
           <Stack.Screen
             name="AddEditMyIngredient"
             component={AddEditMyIngredient}
+            options={{ title: 'Edit Ingredient' }}
           />
           <Stack.Screen
             name="AddMyDish"
             component={AddMyDish}
+            options={{ title: 'Add Dish' }}
           />
           <Stack.Screen
             name="AddEditMyReminder"
             component={AddEditMyReminder}
+            options={{ title: 'Edit Reminder' }}
           />
           <Stack.Screen
             name="ProfileScreen"
             component={ProfileScreen}
+            options={{ title: 'Profile' }}
           />
         </>
       )}
@@ -114,6 +136,7 @@ function AppNavigator() {
   );
 }
 
+// Main App Component
 export default function App() {
   return (
     <AuthProvider>
@@ -133,4 +156,3 @@ export default function App() {
     </AuthProvider>
   );
 }
-
