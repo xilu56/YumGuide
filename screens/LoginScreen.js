@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { View, Text, TextInput, Button, Alert, StyleSheet } from 'react-native';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
 import { auth } from '../Firebase/firebaseSetup';
 import { AuthContext } from '../Context/AuthContext';
 
@@ -13,6 +13,15 @@ export default function LoginScreen({ navigation }) {
     try {
       await signInWithEmailAndPassword(auth, email, password);
       Alert.alert('Success', 'Logged in successfully!');
+    } catch (error) {
+      Alert.alert('Error', error.message);
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    try {
+      await sendPasswordResetEmail(auth, email);
+      Alert.alert('Success', 'Password reset email sent!');
     } catch (error) {
       Alert.alert('Error', error.message);
     }
@@ -37,6 +46,7 @@ export default function LoginScreen({ navigation }) {
         secureTextEntry
       />
       <Button title="Login" onPress={handleLogin} />
+      <Button title="Forgot Password?" onPress={handleForgotPassword} />
       <Button title="Sign Up" onPress={() => navigation.navigate('SignUp')} />
     </View>
   );

@@ -67,7 +67,6 @@ const RecipesScreen = ({ navigation }) => {
 
   return (
     <View style={styles.screen}>
-
       <View style={styles.searchContainer}>
         <TextInput
           style={styles.searchInput}
@@ -93,7 +92,7 @@ const RecipesScreen = ({ navigation }) => {
 
           <FlatList
             data={recommendedRecipe.extendedIngredients}
-            keyExtractor={(item) => item.id.toString()}
+            keyExtractor={(item, index) => item.id?.toString() || index.toString()}
             renderItem={({ item }) => (
               <View style={styles.ingredientContainer}>
                 <Text style={styles.ingredientText}>{item.original}</Text>
