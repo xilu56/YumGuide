@@ -24,6 +24,7 @@ Author: Xi Lu
 * Achieved Google Maps API key and used in the document.
 * Set up notification operation using expo-notification.
 * Allow user to enable local notification for reminders.
+* Formatted dates to local timezone in item component and reminder function.
 
 
 
