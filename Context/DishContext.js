@@ -1,19 +1,18 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
-import { addDoc, collection, getDocs, updateDoc, doc, deleteDoc, query, where } from "firebase/firestore";
-import { database } from '../Firebase/firebaseSetup';
-import { AuthContext } from './AuthContext';
+import React, { createContext, useState, useEffect } from "react";
+import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from "firebase/firestore";
+import { database } from "../Firebase/firebaseSetup";
+import { auth } from "../Firebase/firebaseSetup";
 
 export const DishContext = createContext();
 
 export const DishProvider = ({ children }) => {
   const [dishes, setDishes] = useState([]);
-  const { user } = useContext(AuthContext);
 
-  const getDishes = async () => {
-    if (!user) return;
+  const fetchDishes = async () => {
+    if (!auth.currentUser) return; // Ensure user is authenticated
+    const userId = auth.currentUser.uid;
     try {
-      const q = query(collection(database, "MyDishes"), where("userId", "==", user.uid));
-      const querySnapshot = await getDocs(q);
+      const querySnapshot = await getDocs(collection(database, `users/${userId}/dishes`));
       const dishList = querySnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data(),
@@ -25,21 +24,21 @@ export const DishProvider = ({ children }) => {
   };
 
   const addDish = async (dish) => {
-    if (!user) return;
+    if (!auth.currentUser) return; // Ensure user is authenticated
+    const userId = auth.currentUser.uid;
     try {
-      const docRef = await addDoc(collection(database, "MyDishes"), {
-        ...dish,
-        userId: user.uid,
-      });
-      setDishes([...dishes, { id: docRef.id, ...dish, userId: user.uid }]);
+      const docRef = await addDoc(collection(database, `users/${userId}/dishes`), dish);
+      setDishes([...dishes, { id: docRef.id, ...dish }]);
     } catch (err) {
       console.error("Error adding dish:", err);
     }
   };
-  
+
   const updateDish = async (id, updatedDish) => {
+    if (!auth.currentUser) return; // Ensure user is authenticated
+    const userId = auth.currentUser.uid;
     try {
-      const dishRef = doc(database, "MyDishes", id);
+      const dishRef = doc(database, `users/${userId}/dishes/${id}`);
       await updateDoc(dishRef, updatedDish);
       setDishes(dishes.map(dish =>
         dish.id === id ? { ...dish, ...updatedDish } : dish
@@ -50,8 +49,10 @@ export const DishProvider = ({ children }) => {
   };
 
   const deleteDish = async (id) => {
+    if (!auth.currentUser) return; // Ensure user is authenticated
+    const userId = auth.currentUser.uid;
     try {
-      const dishRef = doc(database, "MyDishes", id);
+      const dishRef = doc(database, `users/${userId}/dishes/${id}`);
       await deleteDoc(dishRef);
       setDishes(dishes.filter(dish => dish.id !== id));
     } catch (err) {
@@ -60,8 +61,8 @@ export const DishProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    getDishes();
-  }, [user]);
+    fetchDishes();
+  }, []);
 
   return (
     <DishContext.Provider value={{ dishes, addDish, updateDish, deleteDish }}>
@@ -69,4 +70,3 @@ export const DishProvider = ({ children }) => {
     </DishContext.Provider>
   );
 };
-

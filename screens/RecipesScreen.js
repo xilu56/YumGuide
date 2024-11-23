@@ -4,12 +4,14 @@ import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
 import getColors from '../Helper/colors';
 import { AuthContext } from '../Context/AuthContext';
+import { IngredientContext } from '../Context/IngredientContext'; // Import IngredientContext
 
 const colors = getColors();
 
 const RecipesScreen = ({ navigation }) => {
   const { user } = useContext(AuthContext);
-  
+  const { ingredients } = useContext(IngredientContext); // Get ingredients from context
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerStyle: { backgroundColor: colors.primary },
@@ -49,21 +51,16 @@ const RecipesScreen = ({ navigation }) => {
     fetchRandomRecipe();
   }, []);
 
-  // Handle search (if needed for additional functionality)
-  const handleSearch = () => {
-    Alert.alert('Search feature is not implemented yet!');
-  };
-
-  // Example logic to mark missing ingredients (Replace with actual data)
-  const userIngredients = ['Corn', 'Cream']; // Replace with data from IngredientsScreen
+  // Update missingIngredients based on user ingredients
   useEffect(() => {
     if (recommendedRecipe) {
+      const userIngredientsList = ingredients.map((ingredient) => ingredient.name.toLowerCase());
       const missing = recommendedRecipe.extendedIngredients.filter(
-        (ingredient) => !userIngredients.includes(ingredient.name)
+        (ingredient) => !userIngredientsList.includes(ingredient.name.toLowerCase())
       ).map((ingredient) => ingredient.name);
       setMissingIngredients(missing);
     }
-  }, [recommendedRecipe]);
+  }, [recommendedRecipe, ingredients]);
 
   return (
     <View style={styles.screen}>
@@ -74,7 +71,7 @@ const RecipesScreen = ({ navigation }) => {
           value={searchTerm}
           onChangeText={setSearchTerm}
         />
-        <Pressable onPress={handleSearch}>
+        <Pressable onPress={() => Alert.alert('Search feature is not implemented yet!')}>
           <Ionicons name="search" size={24} color={colors.text} />
         </Pressable>
       </View>

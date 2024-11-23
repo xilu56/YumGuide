@@ -1,19 +1,19 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
-import { addDoc, collection, getDocs, updateDoc, deleteDoc, doc, query, where } from "firebase/firestore";
-import { database } from '../Firebase/firebaseSetup';
-import { AuthContext } from './AuthContext';
+import React, { createContext, useState, useEffect } from "react";
+import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from "firebase/firestore";
+import { database } from "../Firebase/firebaseSetup";
+import { auth } from "../Firebase/firebaseSetup";
+import { syncNotificationsWithFirestore } from "./NotificationContext";
 
 export const ReminderContext = createContext();
 
 export const ReminderProvider = ({ children }) => {
   const [reminders, setReminders] = useState([]);
-  const { user } = useContext(AuthContext);
 
   const fetchReminders = async () => {
-    if (!user) return;
+    if (!auth.currentUser) return; // Ensure user is authenticated
+    const userId = auth.currentUser.uid;
     try {
-      const q = query(collection(database, "Reminders"), where("userId", "==", user.uid));
-      const querySnapshot = await getDocs(q);
+      const querySnapshot = await getDocs(collection(database, `users/${userId}/reminders`));
       const reminderList = querySnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data(),
@@ -25,21 +25,22 @@ export const ReminderProvider = ({ children }) => {
   };
 
   const addReminder = async (reminder) => {
-    if (!user) return;
+    if (!auth.currentUser) return; // Ensure user is authenticated
+    const userId = auth.currentUser.uid;
     try {
-      const docRef = await addDoc(collection(database, "Reminders"), {
-        ...reminder,
-        userId: user.uid,
-      });
-      setReminders([...reminders, { id: docRef.id, ...reminder, userId: user.uid }]);
+      const docRef = await addDoc(collection(database, `users/${userId}/reminders`), reminder);
+      setReminders([...reminders, { id: docRef.id, ...reminder }]);
+      await syncNotificationsWithFirestore();
     } catch (err) {
       console.error("Error adding reminder:", err);
     }
   };
 
   const updateReminder = async (id, updatedReminder) => {
+    if (!auth.currentUser) return; // Ensure user is authenticated
+    const userId = auth.currentUser.uid;
     try {
-      const reminderRef = doc(database, "Reminders", id);
+      const reminderRef = doc(database, `users/${userId}/reminders/${id}`);
       await updateDoc(reminderRef, updatedReminder);
       setReminders(reminders.map(reminder =>
         reminder.id === id ? { ...reminder, ...updatedReminder } : reminder
@@ -50,8 +51,10 @@ export const ReminderProvider = ({ children }) => {
   };
 
   const deleteReminder = async (id) => {
+    if (!auth.currentUser) return; // Ensure user is authenticated
+    const userId = auth.currentUser.uid;
     try {
-      const reminderRef = doc(database, "Reminders", id);
+      const reminderRef = doc(database, `users/${userId}/reminders/${id}`);
       await deleteDoc(reminderRef);
       setReminders(reminders.filter(reminder => reminder.id !== id));
     } catch (err) {
@@ -61,7 +64,7 @@ export const ReminderProvider = ({ children }) => {
 
   useEffect(() => {
     fetchReminders();
-  }, [user]);
+  }, []);
 
   return (
     <ReminderContext.Provider value={{ reminders, addReminder, updateReminder, deleteReminder }}>
