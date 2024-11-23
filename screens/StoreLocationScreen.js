@@ -6,7 +6,7 @@ import getColors from '../Helper/colors';
 
 const colors = getColors();
 
-const StoreLocationScreen = () => {
+const StoreLocationScreen = ({ navigation }) => {
   const { currentLocation, fetchNearbyPlaces, nearbyPlaces, permissionGranted, getUserLocation } = useContext(LocationContext);
   const [searchQuery, setSearchQuery] = useState('');
   const [mapRegion, setMapRegion] = useState(null);
@@ -22,6 +22,13 @@ const StoreLocationScreen = () => {
       });
     }
   }, [currentLocation]);
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerStyle: { backgroundColor: colors.primary },
+      headerTintColor: colors.white,
+    });
+  }, [navigation]);
 
   const handleSearch = async () => {
     if (!searchQuery.trim()) {
