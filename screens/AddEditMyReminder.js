@@ -48,7 +48,12 @@ export default function AddEditMyReminder({ navigation, route }) {
       description: description.trim(),
     };
 
-    const notificationTime = new Date(`${newReminder.date}T${newReminder.time}:00`);
+    const notificationTime = new Date(reminderDate); 
+    notificationTime.setHours(
+      parseInt(reminderTime.split(":")[0]), 
+      parseInt(reminderTime.split(":")[1])
+    );
+
     if (notificationTime <= new Date()) {
       Alert.alert("Error", "Reminder time must be in the future.");
       return;

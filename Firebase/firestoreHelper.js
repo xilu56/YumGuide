@@ -14,6 +14,14 @@ import {
 } from "firebase/storage";
 import { database, storage } from "./firebaseSetup";
 
+// Helper function to format date to local timezone
+function formatDateToLocal(date) {
+  return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, "0")}-${date
+    .getDate()
+    .toString()
+    .padStart(2, "0")}`;
+}
+
 // MyIngredients CRUD
 export async function addIngredient(data) {
   try {
@@ -106,7 +114,7 @@ export async function deletePhoto(id, filename) {
 
 export async function getPhotos() {
   try {
-    const querySnapshot = await getDocs(collection(database, "Gallery"));
+    const querySnapshot = await getDocs(collection(database, "MyDishes"));
     const photos = querySnapshot.docs.map((docSnap) => ({
       id: docSnap.id,
       ...docSnap.data(),
@@ -121,7 +129,13 @@ export async function getPhotos() {
 // Reminder CRUD
 export async function addReminder(data) {
   try {
-    const docRef = await addDoc(collection(database, "Reminder"), data);
+    // Format the date to local timezone before saving
+    const formattedDate = formatDateToLocal(new Date(data.date));
+
+    const docRef = await addDoc(collection(database, "Reminders"), {
+      ...data,
+      date: formattedDate, // Store as local timezone date
+    });
     console.log("Reminder added:", docRef.id);
     return docRef.id;
   } catch (err) {
@@ -131,7 +145,8 @@ export async function addReminder(data) {
 
 export async function updateReminder(id, data) {
   try {
-    await updateDoc(doc(database, "Reminder", id), data);
+    const formattedDate = formatDateToLocal(new Date(data.date));
+    await updateDoc(doc(database, "Reminder", id), { ...data, date: formattedDate });
     console.log("Reminder updated:", id);
   } catch (err) {
     console.error("Error updating reminder:", err);
@@ -149,7 +164,7 @@ export async function deleteReminder(id) {
 
 export async function getReminders() {
   try {
-    const querySnapshot = await getDocs(collection(database, "Reminders"));
+    const querySnapshot = await getDocs(collection(database, "Reminder"));
     const reminders = querySnapshot.docs.map((docSnap) => ({
       id: docSnap.id,
       ...docSnap.data(),

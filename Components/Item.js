@@ -64,7 +64,7 @@ export default function Item({ item, type }) {
           </View>
           <View style={styles.timeBox}>
             <Text style={styles.timeText}>
-              {item.date && item.date} {item.time && item.time}
+            {new Date(item.date).toLocaleDateString()} {item.time && item.time}
               </Text>
           </View>
         </>
