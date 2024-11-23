@@ -25,6 +25,7 @@ Author: Xi Lu
 * Set up notification operation using expo-notification.
 * Allow user to enable local notification for reminders.
 * Formatted dates to local timezone in item component and reminder function.
+* Added the recommemded recipe on the recipe page.
 
 
 
