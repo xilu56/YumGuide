@@ -1,9 +1,8 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { View, Text, Button, StyleSheet, Alert, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, Alert, TouchableOpacity, Image } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as ImagePicker from 'expo-image-picker';
 import { DishContext } from '../Context/DishContext';
-import { addDishWithPhoto } from '../Firebase/firestoreHelper';
 
 export default function AddMyDish({ navigation, route }) {
   const { isEditing, dish } = route.params || {};
@@ -32,24 +31,21 @@ export default function AddMyDish({ navigation, route }) {
     }
   };
 
-  const handleSave = async () => {
+  const saveDish = async () => {
     if (!photoUri) {
       Alert.alert("Error", "Please take a photo before saving.");
       return;
     }
 
-    const dishData = {
-      date: photoDate.toDateString(),
-      userId: "your-user-id", // Replace this with actual user ID from AuthContext
-    };
-
     try {
-      const newDish = await addDishWithPhoto(photoUri, dishData);
-      addDish(newDish); // Update local context
+      await addDish({
+        date: photoDate.toDateString(),
+        photoUrl: photoUri,
+      });
       Alert.alert('Success', 'Dish added successfully!');
       navigation.goBack();
-    } catch (error) {
-      Alert.alert("Error", error.message);
+    } catch (err) {
+      Alert.alert("Error", "Failed to add the dish.");
     }
   };
 
@@ -82,8 +78,12 @@ export default function AddMyDish({ navigation, route }) {
       )}
 
       <View style={styles.buttonContainer}>
-        <Button title="Cancel" onPress={() => navigation.goBack()} />
-        <Button title="Save" onPress={handleSave} />
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Text style={{ color: 'red' }}>Cancel</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={saveDish}>
+          <Text style={{ color: 'green' }}>Save</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
