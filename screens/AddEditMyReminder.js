@@ -41,39 +41,35 @@ export default function AddEditMyReminder({ navigation, route }) {
       return;
     }
 
-    const newReminder = {
-      title: "Reminder",
-      date: reminderDate.toLocaleDateString("en-CA"), // Saves in "YYYY-MM-DD" format in local time zone
-      time: reminderTime,
-      description: description.trim(),
-    };    
-
-    const notificationTime = new Date(reminderDate); 
-    notificationTime.setHours(
-      parseInt(reminderTime.split(":")[0]), 
-      parseInt(reminderTime.split(":")[1])
-    );
+    const notificationTime = new Date(reminderDate);
+    const [hours, minutes] = reminderTime.split(":").map(Number);
+    notificationTime.setHours(hours, minutes, 0, 0);
 
     if (notificationTime <= new Date()) {
       Alert.alert("Error", "Reminder time must be in the future.");
       return;
     }
 
+    const newReminder = {
+      title: "Reminder",
+      date: reminderDate.toLocaleDateString("en-CA"),
+      time: reminderTime,
+      description: description.trim(),
+    };
+
     if (isEditing) {
       updateReminder(reminder.id, newReminder);
-      Alert.alert("Success", "Reminder updated successfully!");
     } else {
       addReminder(newReminder);
-      Alert.alert("Success", "Reminder saved successfully!");
     }
 
     try {
       await scheduleNotification("Reminder Alert", description.trim(), notificationTime);
+      Alert.alert("Success", isEditing ? "Reminder updated!" : "Reminder added!");
+      navigation.goBack();
     } catch (err) {
       console.error("Error scheduling notification:", err);
     }
-
-    navigation.goBack();
   };
 
   return (
@@ -116,9 +112,7 @@ export default function AddEditMyReminder({ navigation, route }) {
 
       {showTimePicker && (
         <DateTimePicker
-          value={new Date(
-            `${reminderDate.toISOString().split("T")[0]}T${reminderTime}:00`
-          )}
+          value={new Date(reminderDate.setHours(...reminderTime.split(":")))}
           mode="time"
           display="default"
           onChange={(event, selectedTime) => {

@@ -12,7 +12,6 @@ export default function ReminderScreen({ navigation }) {
   const { reminders, deleteReminder } = useContext(ReminderContext);
   const { scheduleNotification } = useContext(NotificationContext);
 
-  // Set header options
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -23,7 +22,6 @@ export default function ReminderScreen({ navigation }) {
           >
             <Ionicons name="add" size={24} color={colors.white} style={{ marginRight: 5 }} />
           </Pressable>
-          <Ionicons name="alarm" size={24} color={colors.white} />
         </View>
       ),
       headerStyle: { backgroundColor: colors.primary },
@@ -31,12 +29,10 @@ export default function ReminderScreen({ navigation }) {
     });
   }, [navigation]);
 
-  // Handle reminder item press for editing
   const handleItemPress = (reminder) => {
     navigation.navigate("AddEditMyReminder", { isEditing: true, reminder });
   };
 
-  // Handle reminder deletion
   const handleDeletePress = (id) => {
     deleteReminder(id);
   };
