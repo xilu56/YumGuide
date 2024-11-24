@@ -91,7 +91,7 @@ export const NotificationProvider = ({ children }) => {
   }, []);
 
   return (
-    <NotificationContext.Provider value={{ syncNotificationsWithFirestore }}>
+    <NotificationContext.Provider value={{ syncNotificationsWithFirestore, scheduleNotification }}>
       {children}
     </NotificationContext.Provider>
   );
