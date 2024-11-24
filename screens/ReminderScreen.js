@@ -1,10 +1,10 @@
-import React, { useContext, useLayoutEffect } from 'react';
-import { View, StyleSheet, Pressable, Text } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import ItemsList from '../Components/ItemsList';
-import { ReminderContext } from '../Context/ReminderContext';
-import { NotificationContext } from '../Context/NotificationContext';
-import getColors from '../Helper/colors';
+import React, { useContext, useLayoutEffect } from "react";
+import { View, StyleSheet, Pressable } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import ItemsList from "../Components/ItemsList";
+import { ReminderContext } from "../Context/ReminderContext";
+import { NotificationContext } from "../Context/NotificationContext";
+import getColors from "../Helper/colors";
 
 const colors = getColors();
 
@@ -12,12 +12,13 @@ export default function ReminderScreen({ navigation }) {
   const { reminders, deleteReminder } = useContext(ReminderContext);
   const { scheduleNotification } = useContext(NotificationContext);
 
+  // Set header options
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <View style={{ flexDirection: 'row', marginRight: 15 }}>
+        <View style={{ flexDirection: "row", marginRight: 15 }}>
           <Pressable
-            onPress={() => navigation.navigate('AddEditMyReminder', { isEditing: false })}
+            onPress={() => navigation.navigate("AddEditMyReminder", { isEditing: false })}
             style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }]}
           >
             <Ionicons name="add" size={24} color={colors.white} style={{ marginRight: 5 }} />
@@ -30,10 +31,12 @@ export default function ReminderScreen({ navigation }) {
     });
   }, [navigation]);
 
+  // Handle reminder item press for editing
   const handleItemPress = (reminder) => {
-    navigation.navigate('AddEditMyReminder', { isEditing: true, reminder });
+    navigation.navigate("AddEditMyReminder", { isEditing: true, reminder });
   };
 
+  // Handle reminder deletion
   const handleDeletePress = (id) => {
     deleteReminder(id);
   };
@@ -55,17 +58,5 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
     backgroundColor: colors.background,
-  },
-  button: {
-    marginTop: 20,
-    padding: 15,
-    backgroundColor: colors.accent,
-    borderRadius: 5,
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: colors.white,
-    fontSize: 16,
-    fontWeight: 'bold',
   },
 });

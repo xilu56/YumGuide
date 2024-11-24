@@ -43,10 +43,10 @@ export default function AddEditMyReminder({ navigation, route }) {
 
     const newReminder = {
       title: "Reminder",
-      date: reminderDate.toISOString().split("T")[0],
+      date: reminderDate.toLocaleDateString("en-CA"), // Saves in "YYYY-MM-DD" format in local time zone
       time: reminderTime,
       description: description.trim(),
-    };
+    };    
 
     const notificationTime = new Date(reminderDate); 
     notificationTime.setHours(

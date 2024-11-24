@@ -1,4 +1,4 @@
-import React, { createContext, useEffect } from "react";
+import React, { createContext, useEffect, useRef } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Notifications from "expo-notifications";
 import { getDocs, collection } from "firebase/firestore";
@@ -6,9 +6,8 @@ import { database, auth } from "../Firebase/firebaseSetup";
 
 export const NotificationContext = createContext();
 
-// Move syncNotificationsWithFirestore to global scope
 export const syncNotificationsWithFirestore = async () => {
-  if (!auth.currentUser) return; // Ensure user is authenticated
+  if (!auth.currentUser) return; // Ensure the user is authenticated
   const userId = auth.currentUser.uid;
 
   try {
@@ -17,14 +16,14 @@ export const syncNotificationsWithFirestore = async () => {
     const remindersFromFirestore = querySnapshot.docs.map((doc) => ({
       title: doc.data().title,
       body: doc.data().description,
-      time: new Date(`${doc.data().date}T${doc.data().time}`).toISOString(), // Convert to UTC
+      time: new Date(`${doc.data().date}T${doc.data().time}`), // Parse to local time
     }));
 
-    // Sync Firestore data with AsyncStorage
+    // Save synced reminders to AsyncStorage
     await AsyncStorage.setItem("notifications", JSON.stringify(remindersFromFirestore));
-    console.log("Synchronized notifications with Firestore:", remindersFromFirestore);
+    console.log("[Sync] Synchronized notifications with Firestore:", remindersFromFirestore);
   } catch (err) {
-    console.error("Error syncing notifications with Firestore:", err);
+    console.error("[Sync] Error syncing notifications with Firestore:", err);
   }
 };
 
@@ -35,15 +34,17 @@ export const scheduleNotification = async (title, body, time) => {
         title,
         body,
       },
-      trigger: { date: new Date(time) }, // Trigger notification at specific time
+      trigger: { date: new Date(time) }, // Trigger notification at a specific time
     });
-    console.log(`Notification scheduled for: ${time}`);
+    console.log(`[Schedule] Notification scheduled for: ${time}`);
   } catch (err) {
-    console.error("Error scheduling notification:", err);
+    console.error("[Schedule] Error scheduling notification:", err);
   }
 };
 
 export const NotificationProvider = ({ children }) => {
+  const intervalRef = useRef(null);
+
   const checkNotifications = async () => {
     try {
       const now = new Date();
@@ -52,42 +53,48 @@ export const NotificationProvider = ({ children }) => {
       const storedNotifications = await AsyncStorage.getItem("notifications");
       const notifications = JSON.parse(storedNotifications) || [];
 
-      // Find due notifications
-      const dueNotifications = notifications.filter(
-        (notification) => new Date(notification.time) <= now
-      );
-
-      // Send due notifications
-      for (const notification of dueNotifications) {
-        await Notifications.scheduleNotificationAsync({
-          content: {
-            title: notification.title,
-            body: notification.body,
-          },
-          trigger: null, // Immediate trigger
-        });
+      // Process due notifications
+      for (const notification of notifications) {
+        const notificationTime = new Date(notification.time);
+        if (notificationTime <= now) {
+          await Notifications.scheduleNotificationAsync({
+            content: {
+              title: notification.title,
+              body: notification.body,
+            },
+            trigger: null, // Immediate trigger
+          });
+          console.log(`[Check] Notification sent for: ${notificationTime}`);
+        }
       }
 
       // Keep only undelivered notifications
       const remainingNotifications = notifications.filter(
         (notification) => new Date(notification.time) > now
       );
-      console.log("Remaining Notifications:", remainingNotifications);
-
-      // Update AsyncStorage
       await AsyncStorage.setItem("notifications", JSON.stringify(remainingNotifications));
+      console.log("[Check] Remaining notifications:", remainingNotifications);
     } catch (err) {
-      console.error("Error checking notifications:", err);
+      console.error("[Check] Error checking notifications:", err);
     }
   };
 
   useEffect(() => {
-    // Sync notifications with Firestore on app load
-    syncNotificationsWithFirestore();
+    if (!intervalRef.current) {
+      // Avoid duplicate sync or interval setup
+      syncNotificationsWithFirestore();
 
-    // Regularly check notifications
-    const interval = setInterval(checkNotifications, 30000); // Every 30 seconds
-    return () => clearInterval(interval);
+      // Set up notification check interval
+      intervalRef.current = setInterval(checkNotifications, 30000); // Check every 30 seconds
+    }
+
+    return () => {
+      // Cleanup interval on unmount
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
   }, []);
 
   return (

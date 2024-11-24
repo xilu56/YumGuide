@@ -17,12 +17,13 @@ export const ReminderProvider = ({ children }) => {
       const reminderList = querySnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data(),
+        date: new Date(`${doc.data().date}T${doc.data().time}`).toLocaleDateString("en-CA"),
       }));
       setReminders(reminderList);
     } catch (err) {
       console.error("Error fetching reminders:", err);
     }
-  };
+  };  
 
   const addReminder = async (reminder) => {
     if (!auth.currentUser) return; // Ensure user is authenticated
