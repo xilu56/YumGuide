@@ -54,10 +54,15 @@ const RecipesScreen = ({ navigation }) => {
   // Update missingIngredients based on user ingredients
   useEffect(() => {
     if (recommendedRecipe) {
-      const userIngredientsList = ingredients.map((ingredient) => ingredient.name.toLowerCase());
+      // Ensure consistent formatting for comparison
+      const userIngredientsList = ingredients.map((ingredient) =>
+        ingredient.name.toLowerCase().trim()
+      );
+  
       const missing = recommendedRecipe.extendedIngredients.filter(
-        (ingredient) => !userIngredientsList.includes(ingredient.name.toLowerCase())
+        (ingredient) => !userIngredientsList.includes(ingredient.name.toLowerCase().trim())
       ).map((ingredient) => ingredient.name);
+  
       setMissingIngredients(missing);
     }
   }, [recommendedRecipe, ingredients]);

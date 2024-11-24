@@ -17,7 +17,7 @@ export const IngredientProvider = ({ children }) => {
         id: doc.id,
         ...doc.data(),
       }));
-      setIngredients(ingredientList);
+      setIngredients(ingredientList || []); // Ensure ingredients is never null
     } catch (err) {
       console.error("Error fetching ingredients:", err);
     }
@@ -61,8 +61,12 @@ export const IngredientProvider = ({ children }) => {
   };
 
   useEffect(() => {
-    fetchIngredients();
-  }, []);
+    if (auth.currentUser) {
+      fetchIngredients(); // Fetch ingredients only if the user is authenticated
+    } else {
+      setIngredients([]); // Clear ingredients if the user is not authenticated
+    }
+  }, [auth.currentUser]); // Dependency on auth.currentUser to handle logout
 
   return (
     <IngredientContext.Provider
