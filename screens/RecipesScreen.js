@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, useLayoutEffect } from 'react';
-import { View, Text, TextInput, Image, FlatList, StyleSheet, Pressable, Alert } from 'react-native';
+import { View, Text, Image, FlatList, StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
 import getColors from '../Helper/colors';
@@ -29,7 +29,6 @@ const RecipesScreen = ({ navigation }) => {
     });
   }, [navigation]);
 
-  const [searchTerm, setSearchTerm] = useState('');
   const [recommendedRecipe, setRecommendedRecipe] = useState(null);
   const [missingIngredients, setMissingIngredients] = useState([]);
 
@@ -69,18 +68,6 @@ const RecipesScreen = ({ navigation }) => {
 
   return (
     <View style={styles.screen}>
-      <View style={styles.searchContainer}>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search..."
-          value={searchTerm}
-          onChangeText={setSearchTerm}
-        />
-        <Pressable onPress={() => Alert.alert('Search feature is not implemented yet!')}>
-          <Ionicons name="search" size={24} color={colors.text} />
-        </Pressable>
-      </View>
-
       <Text style={styles.title}>Welcome to YumGuide</Text>
 
       {recommendedRecipe && (
@@ -115,20 +102,6 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
     backgroundColor: colors.background,
-  },
-  searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
-    backgroundColor: colors.white,
-    borderRadius: 5,
-    paddingHorizontal: 10,
-  },
-  searchInput: {
-    flex: 1,
-    padding: 5,
-    fontSize: 16,
-    color: colors.text,
   },
   title: {
     fontSize: 22,
