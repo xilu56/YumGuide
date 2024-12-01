@@ -6,21 +6,17 @@ import { CommonActions } from '@react-navigation/native';
 export default function ProfileScreen({ navigation }) {
   const { user, logout } = useContext(AuthContext);
 
-  const handleLogout = () => {
-    logout();
-    navigation.dispatch(
-      CommonActions.reset({
-        index: 0,
-        routes: [{ name: 'Login' }],
-      })
-    );
+  const handleLogout = async () => {
+    await logout();
+    setTimeout(() => {
+      navigation.navigate('Login');
+    }, 0);
   };
-
+  
   return (
     <View style={styles.container}>
       <Text style={styles.label}>Logged in as:</Text>
       <Text style={styles.info}>{user?.email || 'Unknown User'}</Text>
-      {/* Display Firebase user ID */}
       <Text style={styles.label}>User ID:</Text>
       <Text style={styles.info}>{user?.uid || 'No User ID'}</Text>
       <Button title="Logout" onPress={handleLogout} />

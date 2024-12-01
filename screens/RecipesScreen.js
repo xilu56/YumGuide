@@ -1,15 +1,34 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, TextInput, Image, FlatList, StyleSheet, Pressable, Alert } from 'react-native';
+import React, { useState, useEffect, useContext, useLayoutEffect } from 'react';
+import { View, Text, Image, FlatList, StyleSheet, Pressable } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
 import getColors from '../Helper/colors';
 import { AuthContext } from '../Context/AuthContext';
+import { IngredientContext } from '../Context/IngredientContext'; // Import IngredientContext
 
 const colors = getColors();
 
 const RecipesScreen = ({ navigation }) => {
   const { user } = useContext(AuthContext);
-  const [searchTerm, setSearchTerm] = useState('');
+  const { ingredients } = useContext(IngredientContext); // Get ingredients from context
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerStyle: { backgroundColor: colors.primary },
+      headerTintColor: colors.white,
+      headerRight: () => (
+        <View style={styles.headerRightContainer}>
+          <Pressable
+            onPress={() => navigation.navigate('ProfileScreen')}
+            style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }]}
+          >
+            <Ionicons name="person-circle-outline" size={28} color={colors.white} />
+          </Pressable>
+        </View>
+      ),
+    });
+  }, [navigation]);
+
   const [recommendedRecipe, setRecommendedRecipe] = useState(null);
   const [missingIngredients, setMissingIngredients] = useState([]);
 
@@ -31,37 +50,24 @@ const RecipesScreen = ({ navigation }) => {
     fetchRandomRecipe();
   }, []);
 
-  // Handle search (if needed for additional functionality)
-  const handleSearch = () => {
-    Alert.alert('Search feature is not implemented yet!');
-  };
-
-  // Example logic to mark missing ingredients (Replace with actual data)
-  const userIngredients = ['Corn', 'Cream']; // Replace with data from IngredientsScreen
+  // Update missingIngredients based on user ingredients
   useEffect(() => {
     if (recommendedRecipe) {
+      // Ensure consistent formatting for comparison
+      const userIngredientsList = ingredients.map((ingredient) =>
+        ingredient.name.toLowerCase().trim()
+      );
+  
       const missing = recommendedRecipe.extendedIngredients.filter(
-        (ingredient) => !userIngredients.includes(ingredient.name)
+        (ingredient) => !userIngredientsList.includes(ingredient.name.toLowerCase().trim())
       ).map((ingredient) => ingredient.name);
+  
       setMissingIngredients(missing);
     }
-  }, [recommendedRecipe]);
+  }, [recommendedRecipe, ingredients]);
 
   return (
     <View style={styles.screen}>
-
-      <View style={styles.searchContainer}>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search..."
-          value={searchTerm}
-          onChangeText={setSearchTerm}
-        />
-        <Pressable onPress={handleSearch}>
-          <Ionicons name="search" size={24} color={colors.text} />
-        </Pressable>
-      </View>
-
       <Text style={styles.title}>Welcome to YumGuide</Text>
 
       {recommendedRecipe && (
@@ -75,7 +81,7 @@ const RecipesScreen = ({ navigation }) => {
 
           <FlatList
             data={recommendedRecipe.extendedIngredients}
-            keyExtractor={(item) => item.id.toString()}
+            keyExtractor={(item, index) => item.id?.toString() || index.toString()}
             renderItem={({ item }) => (
               <View style={styles.ingredientContainer}>
                 <Text style={styles.ingredientText}>{item.original}</Text>
@@ -96,20 +102,6 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
     backgroundColor: colors.background,
-  },
-  searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
-    backgroundColor: colors.white,
-    borderRadius: 5,
-    paddingHorizontal: 10,
-  },
-  searchInput: {
-    flex: 1,
-    padding: 5,
-    fontSize: 16,
-    color: colors.text,
   },
   title: {
     fontSize: 22,

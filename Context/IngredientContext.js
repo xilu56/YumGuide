@@ -1,48 +1,44 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
-import { addDoc, collection, getDocs, updateDoc, doc, deleteDoc, query, where } from "firebase/firestore";
-import { database } from '../Firebase/firebaseSetup';
-import { AuthContext } from './AuthContext';
+import React, { createContext, useState, useEffect } from "react";
+import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc } from "firebase/firestore";
+import { database } from "../Firebase/firebaseSetup";
+import { auth } from "../Firebase/firebaseSetup";
 
 export const IngredientContext = createContext();
 
 export const IngredientProvider = ({ children }) => {
   const [ingredients, setIngredients] = useState([]);
-  const { user } = useContext(AuthContext);
 
-  // Fetch ingredients from Firestore
   const fetchIngredients = async () => {
-    if (!user) return; // Ensure user is logged in
+    if (!auth.currentUser) return; // Ensure user is authenticated
+    const userId = auth.currentUser.uid;
     try {
-      const q = query(collection(database, "MyIngredients"), where("userId", "==", user.uid));
-      const querySnapshot = await getDocs(q);
+      const querySnapshot = await getDocs(collection(database, `users/${userId}/ingredients`));
       const ingredientList = querySnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data(),
       }));
-      setIngredients(ingredientList);
+      setIngredients(ingredientList || []); // Ensure ingredients is never null
     } catch (err) {
       console.error("Error fetching ingredients:", err);
     }
   };
 
-  // Add an ingredient to Firestore and update local state
   const addIngredient = async (ingredient) => {
-    if (!user) return; // Ensure user is logged in
+    if (!auth.currentUser) return; // Ensure user is authenticated
+    const userId = auth.currentUser.uid;
     try {
-      const docRef = await addDoc(collection(database, "MyIngredients"), {
-        ...ingredient,
-        userId: user.uid, // Associate ingredient with user
-      });
-      setIngredients([...ingredients, { id: docRef.id, ...ingredient, userId: user.uid }]);
+      const docRef = await addDoc(collection(database, `users/${userId}/ingredients`), ingredient);
+      setIngredients([...ingredients, { id: docRef.id, ...ingredient }]);
     } catch (err) {
       console.error("Error adding ingredient:", err);
     }
   };
 
-  // Update an ingredient in Firestore and local state
   const updateIngredient = async (id, updatedIngredient) => {
+    if (!auth.currentUser) return; // Ensure user is authenticated
+    const userId = auth.currentUser.uid;
     try {
-      const ingredientRef = doc(database, "MyIngredients", id);
+      const ingredientRef = doc(database, `users/${userId}/ingredients/${id}`);
       await updateDoc(ingredientRef, updatedIngredient);
       setIngredients(ingredients.map(ingredient =>
         ingredient.id === id ? { ...ingredient, ...updatedIngredient } : ingredient
@@ -52,10 +48,11 @@ export const IngredientProvider = ({ children }) => {
     }
   };
 
-  // Delete an ingredient from Firestore and local state
   const deleteIngredient = async (id) => {
+    if (!auth.currentUser) return; // Ensure user is authenticated
+    const userId = auth.currentUser.uid;
     try {
-      const ingredientRef = doc(database, "MyIngredients", id);
+      const ingredientRef = doc(database, `users/${userId}/ingredients/${id}`);
       await deleteDoc(ingredientRef);
       setIngredients(ingredients.filter(ingredient => ingredient.id !== id));
     } catch (err) {
@@ -63,13 +60,23 @@ export const IngredientProvider = ({ children }) => {
     }
   };
 
-  // Effect to fetch ingredients whenever the user changes
   useEffect(() => {
-    fetchIngredients();
-  }, [user]);
+    if (auth.currentUser) {
+      fetchIngredients(); // Fetch ingredients only if the user is authenticated
+    } else {
+      setIngredients([]); // Clear ingredients if the user is not authenticated
+    }
+  }, [auth.currentUser]); // Dependency on auth.currentUser to handle logout
 
   return (
-    <IngredientContext.Provider value={{ ingredients, addIngredient, updateIngredient, deleteIngredient }}>
+    <IngredientContext.Provider
+      value={{
+        ingredients,
+        addIngredient,
+        updateIngredient,
+        deleteIngredient,
+      }}
+    >
       {children}
     </IngredientContext.Provider>
   );

@@ -7,7 +7,20 @@ export default function SignUpScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+  const validatePassword = (password) => {
+    const minLength = 6;
+    const containsNumber = /\d/;
+    if (password.length < minLength) return 'Password must be at least 6 characters long.';
+    if (!containsNumber.test(password)) return 'Password must contain at least one number.';
+    return null;
+  };
+
   const handleSignUp = async () => {
+    const validationError = validatePassword(password);
+    if (validationError) {
+      Alert.alert('Weak Password', validationError);
+      return;
+    }
     try {
       await createUserWithEmailAndPassword(auth, email, password);
       Alert.alert('Success', 'Account created successfully!');
@@ -19,6 +32,10 @@ export default function SignUpScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
+      <Text style={styles.title}>Welcome to YumGuide!</Text>
+      <Text style={styles.description}>
+        Sign up to explore personalized recipes and manage your ingredients with ease.
+      </Text>
       <Text style={styles.label}>Email</Text>
       <TextInput
         style={styles.input}
@@ -46,6 +63,17 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     justifyContent: 'center',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  description: {
+    fontSize: 16,
+    marginBottom: 20,
+    textAlign: 'center',
   },
   label: {
     marginBottom: 5,

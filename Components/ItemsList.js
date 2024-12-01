@@ -10,10 +10,10 @@ export default function ItemsList({ items, onItemPress, onDeletePress, itemType 
   const formattedItems = items.map(item => ({
     ...item,
     date: item.date instanceof Date
-      ? item.date.toDateString()
-      : item.date && item.date.seconds
-      ? new Date(item.date.seconds * 1000).toDateString()
-      : item.date,
+    ? item.date.toLocaleDateString("en-CA") 
+    : item.date && item.date.seconds
+    ? new Date(item.date.seconds * 1000).toLocaleDateString("en-CA")
+    : item.date,
   }));
 
   return (
