@@ -53,7 +53,6 @@ const RecipesScreen = ({ navigation }) => {
   // Update missingIngredients based on user ingredients
   useEffect(() => {
     if (recommendedRecipe) {
-      // Ensure consistent formatting for comparison
       const userIngredientsList = ingredients.map((ingredient) =>
         ingredient.name.toLowerCase().trim()
       );
@@ -104,32 +103,32 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   title: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: 'bold',
-    color: colors.text,
+    color: colors.black,
     marginBottom: 10,
   },
   subtitle: {
     fontSize: 18,
-    color: colors.text,
+    color: colors.gray,
     marginBottom: 5,
   },
   recipeImage: {
     width: '100%',
     height: 200,
-    borderRadius: 10,
     marginBottom: 10,
   },
   recipeTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: colors.text,
+    color: colors.black,
     marginBottom: 10,
   },
   ingredientContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     marginVertical: 5,
+    marginHorizontal: 5,
   },
   ingredientText: {
     fontSize: 16,
