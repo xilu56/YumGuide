@@ -16,6 +16,7 @@ import AddEditMyReminder from './screens/AddEditMyReminder';
 import LoginScreen from './screens/LoginScreen';
 import SignUpScreen from './screens/SignUpScreen';
 import ProfileScreen from './screens/ProfileScreen';
+import SearchRecipesScreen from './screens/SearchRecipesScreen';
 
 // Context Providers
 import { IngredientProvider } from './Context/IngredientContext';
@@ -129,6 +130,11 @@ function AppNavigator() {
             name="ProfileScreen"
             component={ProfileScreen}
             options={{ title: 'Profile' }}
+          />
+          <Stack.Screen
+            name="SearchRecipes"
+            component={SearchRecipesScreen}
+            options={{ title: 'Search Recipes' }}
           />
         </>
       )}
