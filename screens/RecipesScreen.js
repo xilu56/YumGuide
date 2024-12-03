@@ -4,13 +4,13 @@ import { Ionicons } from '@expo/vector-icons';
 import axios from 'axios';
 import getColors from '../Helper/colors';
 import { AuthContext } from '../Context/AuthContext';
-import { IngredientContext } from '../Context/IngredientContext'; // Import IngredientContext
+import { IngredientContext } from '../Context/IngredientContext';
 
 const colors = getColors();
 
 const RecipesScreen = ({ navigation }) => {
   const { user } = useContext(AuthContext);
-  const { ingredients } = useContext(IngredientContext); // Get ingredients from context
+  const { ingredients } = useContext(IngredientContext);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -32,7 +32,6 @@ const RecipesScreen = ({ navigation }) => {
   const [recommendedRecipe, setRecommendedRecipe] = useState(null);
   const [missingIngredients, setMissingIngredients] = useState([]);
 
-  // Function to fetch a random recipe
   const fetchRandomRecipe = async () => {
     try {
       const response = await axios.get(
@@ -45,23 +44,20 @@ const RecipesScreen = ({ navigation }) => {
     }
   };
 
-  // Fetch random recipe on screen load
   useEffect(() => {
     fetchRandomRecipe();
   }, []);
 
-  // Update missingIngredients based on user ingredients
   useEffect(() => {
     if (recommendedRecipe) {
-      // Ensure consistent formatting for comparison
       const userIngredientsList = ingredients.map((ingredient) =>
         ingredient.name.toLowerCase().trim()
       );
-  
+
       const missing = recommendedRecipe.extendedIngredients.filter(
         (ingredient) => !userIngredientsList.includes(ingredient.name.toLowerCase().trim())
       ).map((ingredient) => ingredient.name);
-  
+
       setMissingIngredients(missing);
     }
   }, [recommendedRecipe, ingredients]);
@@ -85,8 +81,8 @@ const RecipesScreen = ({ navigation }) => {
             renderItem={({ item }) => (
               <View style={styles.ingredientContainer}>
                 <Text style={styles.ingredientText}>{item.original}</Text>
-                {missingIngredients.includes(item.name) && (
-                  <Ionicons name="alert-circle" size={20} color="red" />
+                {missingIngredients.includes(item.name.toLowerCase().trim()) && (
+                  <Ionicons name="alert-circle" size={20} color={colors.cancel} style={styles.alertIcon} />
                 )}
               </View>
             )}
@@ -100,40 +96,63 @@ const RecipesScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    padding: 10,
+    padding: 16,
     backgroundColor: colors.background,
   },
   title: {
-    fontSize: 22,
+    fontSize: 26,
     fontWeight: 'bold',
-    color: colors.text,
+    color: colors.primary,
     marginBottom: 10,
+    textAlign: 'center',
   },
   subtitle: {
-    fontSize: 18,
-    color: colors.text,
-    marginBottom: 5,
+    fontSize: 20,
+    color: colors.secondary,
+    marginBottom: 10,
+    textAlign: 'center',
   },
   recipeImage: {
     width: '100%',
     height: 200,
-    borderRadius: 10,
-    marginBottom: 10,
+    borderRadius: 16,
+    marginBottom: 16,
+    shadowColor: colors.black,
+    shadowOpacity: 0.2,
+    shadowOffset: { width: 0, height: 4 },
+    shadowRadius: 6,
   },
   recipeTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: colors.text,
-    marginBottom: 10,
+    fontSize: 22,
+    fontWeight: '600',
+    color: colors.primary,
+    marginBottom: 16,
+    textAlign: 'center',
   },
   ingredientContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 5,
+    marginVertical: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    backgroundColor: colors.white,
+    borderRadius: 10,
+    shadowColor: colors.black,
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
   },
   ingredientText: {
     fontSize: 16,
-    color: colors.text,
+    color: colors.black,
+    flex: 1,
+  },
+  alertIcon: {
+    marginLeft: 8,
+  },
+  headerRightContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
     marginRight: 10,
   },
 });
