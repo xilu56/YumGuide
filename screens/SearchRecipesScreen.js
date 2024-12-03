@@ -16,13 +16,18 @@ export default function SearchRecipesScreen() {
   const fetchRecipes = async () => {
     try {
       const apiKey = 'f1d289212d394251a96b48c859777ba1';
-      const ingredientNames = ingredients.map((ingredient) => ingredient.name).join(',');
-      const apiUrl = ingredientNames
-        ? `https://api.spoonacular.com/recipes/findByIngredients?ingredients=${ingredientNames}&apiKey=${apiKey}`
-        : `https://api.spoonacular.com/recipes/random?number=1&apiKey=${apiKey}`;
+      let apiUrl;
+
+      if (ingredients.length > 0) {
+        const ingredientNames = ingredients.map((ingredient) => ingredient.name).join(',');
+        apiUrl = `https://api.spoonacular.com/recipes/findByIngredients?ingredients=${ingredientNames}&apiKey=${apiKey}`;
+      } else {
+        apiUrl = `https://api.spoonacular.com/recipes/random?number=5&apiKey=${apiKey}`;
+      }
 
       const response = await axios.get(apiUrl);
-      setRecipes(response.data);
+      const data = ingredients.length > 0 ? response.data : response.data.recipes;
+      setRecipes(data);
     } catch (error) {
       console.error('Error fetching recipes:', error.response?.data || error.message);
     }
@@ -66,15 +71,25 @@ export default function SearchRecipesScreen() {
   return (
     <FlatList
       data={recipes}
-      keyExtractor={(recipe, index) => recipe.id?.toString() || index.toString()}
+      keyExtractor={(item, index) => `${item.id || index}-${index}`}
       contentContainerStyle={styles.screen}
       renderItem={({ item: recipe }) => (
         <View style={styles.recipeCard}>
-          <Image source={{ uri: recipe.image }} style={styles.image} />
+          <Image
+            source={{
+              uri: recipe.image && recipe.image.startsWith('http')
+                ? recipe.image
+                : 'https://via.placeholder.com/150',
+            }}
+            style={styles.image}
+            onError={() =>
+              console.warn(`Failed to load image for ${recipe.title}, using placeholder`)
+            }
+          />
           <Text style={styles.title}>{recipe.title}</Text>
           <FlatList
             data={recipe.missedIngredients || []}
-            keyExtractor={(item, idx) => item.id?.toString() || `${item.name}-${idx}`}
+            keyExtractor={(item, idx) => `${item.name}-${idx}`}
             renderItem={({ item }) => (
               <View style={styles.ingredientRow}>
                 <Text style={styles.ingredientText}>{item.name}</Text>
