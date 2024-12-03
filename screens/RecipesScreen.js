@@ -77,7 +77,7 @@ const RecipesScreen = ({ navigation }) => {
 
           <FlatList
             data={recommendedRecipe.extendedIngredients}
-            keyExtractor={(item, index) => item.id?.toString() || index.toString()}
+            keyExtractor={(item, index) => `${item.id || index}-${index}`}
             renderItem={({ item }) => (
               <View style={styles.ingredientContainer}>
                 <Text style={styles.ingredientText}>{item.original}</Text>
