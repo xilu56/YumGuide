@@ -38,12 +38,17 @@ export default function SearchRecipesScreen() {
     const updatedMissingIngredients = {};
 
     recipes.forEach((recipe) => {
-      const recipeMissingIngredients = recipe.missedIngredients
-        ? recipe.missedIngredients.filter(
-            (item) => !userIngredients.includes(item.name.toLowerCase())
-          ).map((item) => item.name)
-        : [];
-      updatedMissingIngredients[recipe.id] = recipeMissingIngredients;
+      if (ingredients.length > 0) {
+        const recipeMissingIngredients = recipe.missedIngredients
+          ? recipe.missedIngredients.filter(
+              (item) => !userIngredients.includes(item.name.toLowerCase())
+            ).map((item) => item.name)
+          : [];
+        updatedMissingIngredients[recipe.id] = recipeMissingIngredients;
+      } else {
+        const allIngredients = recipe.extendedIngredients || [];
+        updatedMissingIngredients[recipe.id] = allIngredients.map((item) => item.name);
+      }
     });
 
     setMissingIngredients(updatedMissingIngredients);
@@ -88,14 +93,16 @@ export default function SearchRecipesScreen() {
           />
           <Text style={styles.title}>{recipe.title}</Text>
           <FlatList
-            data={recipe.missedIngredients || []}
+            data={
+              ingredients.length > 0
+                ? recipe.missedIngredients || []
+                : recipe.extendedIngredients || []
+            }
             keyExtractor={(item, idx) => `${item.name}-${idx}`}
             renderItem={({ item }) => (
               <View style={styles.ingredientRow}>
                 <Text style={styles.ingredientText}>{item.name}</Text>
-                {missingIngredients[recipe.id]?.includes(item.name) && (
-                  <Ionicons name="alert-circle" size={20} color="red" />
-                )}
+                <Ionicons name="alert-circle" size={20} color="red" />
               </View>
             )}
           />
