@@ -1,10 +1,11 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import getColors from '../Helper/colors';
 import { useNavigation } from '@react-navigation/native';
 
 const colors = getColors();
-const { primary, white } = colors;
+const { primary, white, gray, background, cancel } = colors;
 
 export default function Item({ item, type }) {
   const navigation = useNavigation();
@@ -13,33 +14,30 @@ export default function Item({ item, type }) {
     if (type === 'ingredients') {
       navigation.navigate('AddEditMyIngredient', {
         isEditing: true,
-        ingredient: item, // Pass the full ingredient object
+        ingredient: item,
       });
     } else if (type === 'reminder') {
       navigation.navigate('AddEditMyReminder', {
         isEditing: true,
-        reminder: item, // Pass the full reminder object
+        reminder: item,
       });
     }
     // Add logic for other types like "dishGallery" if needed
   };
 
   return (
-    <TouchableOpacity
-      onPress={handlePress}
-      style={[styles.container, { backgroundColor: primary }]}
-    >
+    <TouchableOpacity onPress={handlePress} style={[styles.container, { backgroundColor: background }]}>
       {type === 'dishGallery' && (
         <>
           {item.photoUrl ? (
-            <Image source={{ uri: item.photoUrl }} style={styles.image} />
+            <Image source={{ uri: item.photoUrl }} style={styles.imageLarge} />
           ) : (
-            <View style={styles.placeholder}>
-              <Text style={styles.placeholderText}>No Image</Text>
+            <View style={styles.placeholderLarge}>
+              <Ionicons name="image-outline" size={30} color={gray} />
             </View>
           )}
           <View style={styles.details}>
-            <Text style={[styles.date, { color: white }]}>{item.date || 'No Date'}</Text>
+            <Text style={styles.date}>{item.date || 'No Date'}</Text>
           </View>
         </>
       )}
@@ -47,7 +45,7 @@ export default function Item({ item, type }) {
       {type === 'ingredients' && (
         <>
           <View style={styles.details}>
-            <Text style={[styles.description, { color: white }]}>{item.name}</Text>
+            <Text style={styles.description}>{item.name}</Text>
           </View>
           <View style={styles.quantityBox}>
             <Text style={styles.quantityText}>
@@ -60,7 +58,7 @@ export default function Item({ item, type }) {
       {type === 'reminder' && (
         <>
           <View style={styles.details}>
-            <Text style={[styles.description, { color: white }]}>{item.description}</Text>
+            <Text style={styles.description}>{item.description}</Text>
           </View>
           <View style={styles.timeBox}>
             <Text style={styles.timeText}>
@@ -79,37 +77,45 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 15,
     borderRadius: 10,
-    marginVertical: 10,
+    marginVertical: 2,
+    shadowColor: primary,
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
   },
-  image: {
-    width: 50,
-    height: 50,
-    borderRadius: 5,
-    marginRight: 10,
+  imageLarge: {
+    width: 100,
+    height: 100,
+    borderRadius: 10,
+    marginRight: 15,
   },
-  placeholder: {
-    width: 50,
-    height: 50,
-    borderRadius: 5,
-    marginRight: 10,
-    backgroundColor: '#e0e0e0',
+  placeholderLarge: {
+    width: 80,
+    height: 80,
+    borderRadius: 10,
+    marginRight: 15,
+    backgroundColor: gray,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  placeholderText: {
-    color: '#888',
   },
   details: {
     flex: 1,
   },
   description: {
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: 'bold',
+    color: primary,
+    marginBottom: 4,
   },
   quantityBox: {
     backgroundColor: white,
-    padding: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
     borderRadius: 5,
+    shadowColor: primary,
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
   },
   quantityText: {
     fontSize: 14,
@@ -117,15 +123,21 @@ const styles = StyleSheet.create({
   },
   timeBox: {
     backgroundColor: white,
-    padding: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
     borderRadius: 5,
+    shadowColor: cancel,
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
   },
   timeText: {
     fontSize: 14,
-    color: primary,
+    color: cancel,
   },
   date: {
     fontSize: 14,
     fontWeight: 'bold',
+    color: primary,
   },
 });
