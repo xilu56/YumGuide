@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { View, Text, FlatList, StyleSheet, Image, ScrollView } from 'react-native';
+import { View, Text, FlatList, StyleSheet, Image } from 'react-native';
 import { IngredientContext } from '../Context/IngredientContext';
 import axios from 'axios';
 import getColors from '../Helper/colors';
@@ -11,6 +11,7 @@ export default function SearchRecipesScreen() {
   const { ingredients } = useContext(IngredientContext);
   const [recipes, setRecipes] = useState([]);
   const [missingIngredients, setMissingIngredients] = useState({});
+  const [isSorted, setIsSorted] = useState(false);
 
   const fetchRecipes = async () => {
     try {
@@ -23,20 +24,13 @@ export default function SearchRecipesScreen() {
       const response = await axios.get(apiUrl);
       setRecipes(response.data);
     } catch (error) {
-      if (error.response) {
-        console.error('Error fetching recipes:', {
-          status: error.response.status,
-          data: error.response.data,
-        });
-      } else {
-        console.error('Error fetching recipes:', error.message);
-      }
+      console.error('Error fetching recipes:', error.response?.data || error.message);
     }
   };
 
   const updateMissingIngredients = () => {
     const userIngredients = ingredients.map((ingredient) => ingredient.name.toLowerCase());
-    const missing = {};
+    const updatedMissingIngredients = {};
 
     recipes.forEach((recipe) => {
       const recipeMissingIngredients = recipe.missedIngredients
@@ -44,10 +38,19 @@ export default function SearchRecipesScreen() {
             (item) => !userIngredients.includes(item.name.toLowerCase())
           ).map((item) => item.name)
         : [];
-      missing[recipe.id] = recipeMissingIngredients;
+      updatedMissingIngredients[recipe.id] = recipeMissingIngredients;
     });
 
-    setMissingIngredients(missing);
+    setMissingIngredients(updatedMissingIngredients);
+
+    const sortedRecipes = [...recipes].sort((a, b) => {
+      const missingA = updatedMissingIngredients[a.id]?.length || 0;
+      const missingB = updatedMissingIngredients[b.id]?.length || 0;
+      return missingA - missingB;
+    });
+
+    setRecipes(sortedRecipes);
+    setIsSorted(true);
   };
 
   useEffect(() => {
@@ -55,10 +58,10 @@ export default function SearchRecipesScreen() {
   }, []);
 
   useEffect(() => {
-    if (recipes.length > 0) {
+    if (recipes.length > 0 && !isSorted) {
       updateMissingIngredients();
     }
-  }, [recipes, ingredients]);
+  }, [recipes, ingredients, isSorted]);
 
   return (
     <FlatList
