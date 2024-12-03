@@ -69,7 +69,7 @@ const StoreLocationScreen = ({ navigation }) => {
         />
         <Button title="Search" onPress={handleSearch} />
       </View>
-      <Button title="Refresh Location" onPress={getUserLocation} />
+      <Button title="Get my location" onPress={getUserLocation} />
       {mapRegion && (
         <MapView
           style={styles.map}
