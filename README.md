@@ -71,3 +71,7 @@ Author: Zhuoyuan Liu
 * Add new screen SearchRecipesScreen allow users to search recipes based on their ingredients.
 * Add new information on Login screen.
 * Fix duplicate keys in Recipe and SearchRecipesScreen screen.
+
+<img width="376" alt="Screenshot 2024-12-02 at 11 11 35 PM" src="https://github.com/user-attachments/assets/5b8c7370-6e3b-44f9-a23a-6683f8c4d344">
+
+<img width="381" alt="Screenshot 2024-12-02 at 11 11 47 PM" src="https://github.com/user-attachments/assets/03118e57-a40f-4e97-8ad0-0dfb9ce1fcba">
