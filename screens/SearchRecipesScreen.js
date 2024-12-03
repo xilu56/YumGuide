@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { View, Text, FlatList, StyleSheet, Image } from 'react-native';
+import { View, Text, FlatList, StyleSheet, Image, ScrollView } from 'react-native';
 import { IngredientContext } from '../Context/IngredientContext';
 import axios from 'axios';
 import getColors from '../Helper/colors';
@@ -61,9 +61,12 @@ export default function SearchRecipesScreen() {
   }, [recipes, ingredients]);
 
   return (
-    <View style={styles.screen}>
-      {recipes.map((recipe, index) => (
-        <View key={recipe.id || index} style={styles.recipeCard}>
+    <FlatList
+      data={recipes}
+      keyExtractor={(recipe, index) => recipe.id?.toString() || index.toString()}
+      contentContainerStyle={styles.screen}
+      renderItem={({ item: recipe }) => (
+        <View style={styles.recipeCard}>
           <Image source={{ uri: recipe.image }} style={styles.image} />
           <Text style={styles.title}>{recipe.title}</Text>
           <FlatList
@@ -79,16 +82,15 @@ export default function SearchRecipesScreen() {
             )}
           />
         </View>
-      ))}
-    </View>
+      )}
+    />
   );
 }
 
 const styles = StyleSheet.create({
   screen: {
-    flex: 1,
-    backgroundColor: colors.background,
     padding: 10,
+    backgroundColor: colors.background,
   },
   recipeCard: {
     marginBottom: 20,
