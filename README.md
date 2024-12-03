@@ -63,7 +63,9 @@ service cloud.firestore {
 remain unchanged
 
 Author: Xi Lu
-* 
+* Enhance Item component styling and layout for better UI design
+* Update locationscreen refresh button to enhance clarity
+* Update color scheme and enhance styling for RecipesScreen components
 
 Author: Zhuoyuan Liu
 * Add new screen SearchRecipesScreen allow users to search recipes based on their ingredients.
