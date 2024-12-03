@@ -10,11 +10,11 @@ const colors = getColors();
 export default function SearchRecipesScreen() {
   const { ingredients } = useContext(IngredientContext);
   const [recipes, setRecipes] = useState([]);
-  const [missingIngredients, setMissingIngredients] = useState([]);
+  const [missingIngredients, setMissingIngredients] = useState({});
 
   const fetchRecipes = async () => {
     try {
-      const apiKey = 'f1d289212d394251a96b48c859777ba1'; // 硬编码 API Key
+      const apiKey = 'f1d289212d394251a96b48c859777ba1';
       const ingredientNames = ingredients.map((ingredient) => ingredient.name).join(',');
       const apiUrl = ingredientNames
         ? `https://api.spoonacular.com/recipes/findByIngredients?ingredients=${ingredientNames}&apiKey=${apiKey}`
@@ -34,33 +34,47 @@ export default function SearchRecipesScreen() {
     }
   };
 
+  const updateMissingIngredients = () => {
+    const userIngredients = ingredients.map((ingredient) => ingredient.name.toLowerCase());
+    const missing = {};
+
+    recipes.forEach((recipe) => {
+      const recipeMissingIngredients = recipe.missedIngredients
+        ? recipe.missedIngredients.filter(
+            (item) => !userIngredients.includes(item.name.toLowerCase())
+          ).map((item) => item.name)
+        : [];
+      missing[recipe.id] = recipeMissingIngredients;
+    });
+
+    setMissingIngredients(missing);
+  };
+
   useEffect(() => {
     fetchRecipes();
   }, []);
 
-  const calculateMissingIngredients = (recipe) => {
-    const userIngredients = ingredients.map((i) => i.name.toLowerCase());
-    return recipe.missedIngredients
-      ? recipe.missedIngredients.map((item) => ({
-          name: item.name,
-          missing: !userIngredients.includes(item.name.toLowerCase()),
-        }))
-      : [];
-  };
+  useEffect(() => {
+    if (recipes.length > 0) {
+      updateMissingIngredients();
+    }
+  }, [recipes, ingredients]);
 
   return (
     <View style={styles.screen}>
       {recipes.map((recipe, index) => (
-        <View key={index} style={styles.recipeCard}>
+        <View key={recipe.id || index} style={styles.recipeCard}>
           <Image source={{ uri: recipe.image }} style={styles.image} />
           <Text style={styles.title}>{recipe.title}</Text>
           <FlatList
             data={recipe.missedIngredients || []}
-            keyExtractor={(item, idx) => idx.toString()}
+            keyExtractor={(item, idx) => item.id?.toString() || `${item.name}-${idx}`}
             renderItem={({ item }) => (
               <View style={styles.ingredientRow}>
                 <Text style={styles.ingredientText}>{item.name}</Text>
-                {item.missing && <Ionicons name="alert-circle" size={20} color="red" />}
+                {missingIngredients[recipe.id]?.includes(item.name) && (
+                  <Ionicons name="alert-circle" size={20} color="red" />
+                )}
               </View>
             )}
           />
