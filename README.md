@@ -62,6 +62,9 @@ service cloud.firestore {
 }
 remain unchanged
 
+6. App demo video
+https://northeastern-my.sharepoint.com/:v:/g/personal/lu_xi2_northeastern_edu/Ed96i0a2N9RCltBgFbiAYrABvv1d5Rg0Rw-lk4e7G92Vkg
+
 Author: Xi Lu
 * Enhance Item component styling and layout for better UI design
 * Update locationscreen refresh button to enhance clarity
