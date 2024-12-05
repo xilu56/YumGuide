@@ -11,6 +11,10 @@ export default function LoginScreen({ navigation }) {
 
   const handleLogin = async () => {
     try {
+      if (password.length < 6) {
+        Alert.alert('Error', 'Password must be at least 6 characters.');
+        return;
+      }
       await signInWithEmailAndPassword(auth, email, password);
       Alert.alert('Success', 'Logged in successfully!');
     } catch (error) {
@@ -29,6 +33,9 @@ export default function LoginScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
+      <Text style={styles.header}>
+        Log in to YumGuide and start tracking your ingredients and recipes.
+      </Text>
       <Text style={styles.label}>Email</Text>
       <TextInput
         style={styles.input}
@@ -57,6 +64,13 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     justifyContent: 'center',
+    backgroundColor: '#f5f5f5',
+  },
+  header: {
+    fontSize: 18,
+    textAlign: 'center',
+    marginBottom: 20,
+    fontWeight: 'bold',
   },
   label: {
     marginBottom: 5,

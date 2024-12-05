@@ -4,9 +4,14 @@ import getColors from '../Helper/colors';
 
 const colors = getColors();
 
-export default function Button({ title, onPress, style }) {
-  const backgroundColor = title === 'Cancel' ? colors.primary : colors.accent;
-  const buttonText = title === 'Save' ? colors.primary : colors.accent;
+export default function Button({ title, onPress, style, textStyle }) {
+  const backgroundColor =
+    title === 'Cancel' ? colors.primary :
+    title === 'Save' || title === 'Search' ? colors.accent : colors.gray;
+
+  const buttonTextColor =
+    title === 'Cancel' ? colors.white :
+    title === 'Save' || title === 'Search' ? colors.black : colors.primary;
 
   return (
     <Pressable
@@ -14,12 +19,12 @@ export default function Button({ title, onPress, style }) {
       android_ripple={{ color: colors.ripple }}
       style={({ pressed }) => [
         styles.button,
-        { backgroundColor: pressed ? colors.accent : backgroundColor },
+        { backgroundColor: pressed && title !== 'Cancel' ? colors.accent : backgroundColor },
         style,
       ]}
     >
-      <Text style={[styles.text, { color: buttonText }]}>
-        {title}
+      <Text style={[styles.text, { color: buttonTextColor }, textStyle]}>
+        {title || 'Button'}
       </Text>
     </Pressable>
   );

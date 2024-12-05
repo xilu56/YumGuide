@@ -13,12 +13,12 @@ export default function DishGalleryScreen({ navigation }) {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <View style={{ flexDirection: 'row', marginRight: 15 }}>
+        <View style={styles.headerRightContainer}>
           <Pressable
             onPress={() => navigation.navigate('AddMyDish', { isEditing: false })}
             style={({ pressed }) => [{ opacity: pressed ? 0.5 : 1 }]}
           >
-            <Ionicons name="add" size={24} color={colors.white} style={{ marginRight: 5 }} />
+            <Ionicons name="add" size={24} color={colors.white} style={styles.icon} />
           </Pressable>
           <Ionicons name="images" size={24} color={colors.white} />
         </View>
@@ -51,7 +51,15 @@ export default function DishGalleryScreen({ navigation }) {
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    padding: 10,
+    padding: 16, // Adjusted padding for better spacing
     backgroundColor: colors.background,
+  },
+  headerRightContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: 15,
+  },
+  icon: {
+    marginRight: 10, // Spacing between icons
   },
 });

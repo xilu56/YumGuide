@@ -4,6 +4,8 @@ import { Ionicons } from '@expo/vector-icons';
 import ItemsList from '../Components/ItemsList';
 import { IngredientContext } from '../Context/IngredientContext';
 import getColors from '../Helper/colors';
+import Button from '../Components/Button';
+import { useNavigation } from '@react-navigation/native';
 
 const colors = getColors();
 
@@ -36,13 +38,22 @@ export default function IngredientsScreen({ navigation }) {
     deleteIngredient(id);
   };
 
+  const navigateToSearch = () => {
+    navigation.navigate('SearchRecipes');
+  };
+
   return (
     <View style={styles.screen}>
       <ItemsList
         items={ingredients}
         itemType="ingredients"
         onItemPress={handleItemPress}
-        onDeletePress={handleDeletePress} // Pass the delete function to ItemsList
+        onDeletePress={handleDeletePress}
+      />
+      <Button
+        title="Search"
+        onPress={navigateToSearch}
+        style={styles.searchButton}
       />
     </View>
   );
@@ -53,5 +64,9 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 10,
     backgroundColor: colors.background,
+  },
+  searchButton: {
+    marginTop: 20,
+    alignSelf: 'center',
   },
 });
