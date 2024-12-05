@@ -2,8 +2,11 @@
 
 YumGuide is a smart mobile application designed to enhance users' cooking experiences by recommending recipes based on available ingredients, providing store location assistance, and enabling reminders. The following sections detail the application's features, technical architecture, and contributions from the development team.
 
-Overview: Iteration 3
-In the third phase of the project, we mainly fixed some problems and improved several major functions to enhance the user experience. Below are the newly added or fixed features.
+Overview:
+Iteration 1: In the iteration 1 of the project, we are designing a mobile app that helps users manage their ingredients, view a dish gallery, and set reminders for related tasks. The app includes navigation with logos representing each feature and a cohesive design throughout all screens.
+Iteration 2: In the second phase of the project, we successfully implemented several key features, enhancing both functionality and user experience. 
+Iteration 3: In the third phase of the project, we mainly fixed some problems and improved several major functions to enhance the user experience. Below are the newly added or fixed features.
+
 
 1. Authentication
 Added some prompts to the user login interface to let users know the benefits of logging in.
@@ -65,12 +68,40 @@ remain unchanged
 6. App demo video
 https://northeastern-my.sharepoint.com/:v:/g/personal/lu_xi2_northeastern_edu/Ed96i0a2N9RCltBgFbiAYrABvv1d5Rg0Rw-lk4e7G92Vkg
 
+Contribution by authors:
+
 Author: Xi Lu
+iteration 1: 
+* Completed navigation setup with logos.
+* Added a screen for users to create new ingredient entries (Create function).
+* Implemented create operations for all three collections.
+* Added delete operations for the ingredients and reminder collections.
+* Refactored screens and components for uniformity, updated color schemes, and fixed navigation references.
+iteration 2:
+* Completed store location screen using Location operation.
+* Achieved Google Maps API key and used in the document.
+* Set up notification operation using expo-notification.
+* Allow user to enable local notification for reminders.
+* Formatted dates to local timezone in item component and reminder function.
+* Added the recommemded recipe on the recipe page.
+iteration 3:
 * Enhance Item component styling and layout for better UI design
 * Update locationscreen refresh button to enhance clarity
 * Update color scheme and enhance styling for RecipesScreen components
 
 Author: Zhuoyuan Liu
+iteration 1:
+* Set up a firestore database and connect the three collections with corresponding screens.
+* Added edit operations for all three collections to update user's new input.
+* Added delete operations for the dish gallery collection.
+* Fixed rendering bugs to improve the stability and responsiveness of the app.
+iteration 2:
+* Enhanced Ingredient and Recipe context handling to update recipe's ingredient correctly.
+* Set up login and signup screen, and support user to retrieve password.
+* Fixed login and navigation issues, improving persistent login support.
+* Enhanced firebase authentication rules to achieve user data isolation from others.
+* Integrated camera functionality, enabling users to upload dish photos to firestore and show in app.
+iteration 3:
 * Add new screen SearchRecipesScreen allow users to search recipes based on their ingredients.
 * Add new information on Login screen.
 * Fix duplicate keys in Recipe and SearchRecipesScreen screen.
